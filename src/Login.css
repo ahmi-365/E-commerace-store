@@ -1,0 +1,10 @@
+/* Login.css */
+
+.card {
+ background-color: #f8f9fa; /* Light background for the card */
+ border-radius: 10px; /* Rounded corners */
+}
+
+h2 {
+ color: #343a40; /* Darker color for the heading */
+}

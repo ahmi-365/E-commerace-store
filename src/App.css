@@ -1,0 +1,9 @@
+.product-image {
+  height: 200px; /* Set a fixed height */
+  object-fit: cover; /* Maintain aspect ratio and cover the area */
+}
+/* index.css or App.css */
+body {
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+  margin: 0; /* Reset margin */
+}

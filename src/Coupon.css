@@ -1,0 +1,15 @@
+.coupon-form-container {
+ margin: 20px;
+}
+
+.alert {
+ text-align: center;
+}
+.link-back {
+ color: #007bff; /* Bootstrap primary color */
+ text-decoration: none; /* No underline */
+}
+
+.link-back:hover {
+ text-decoration: underline; /* Underline on hover */
+}

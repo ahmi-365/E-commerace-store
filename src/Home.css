@@ -1,0 +1,58 @@
+.home-page .hero-section {
+ background-image: url('https://via.placeholder.com/1200x600'); /* Replace with your banner image */
+ background-size: cover;
+ background-position: center;
+ height: 500px;
+ display: flex;
+ justify-content: center;
+ align-items: center;
+}
+
+.home-page .hero-section h1 {
+ font-size: 4rem;
+ font-weight: bold;
+}
+
+.features-section {
+ background-color: #343a40;
+}
+
+.features-section .feature-box i {
+ color: #f8f9fa;
+}
+
+.footer-section {
+ background-color: #343a40;
+}
+/* HomePage.css */
+
+.home-page .hero-section {
+ background-image: url('https://images.unsplash.com/photo-1542744173-8e7e53415bb0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNzMwN3wwfDF8c2VhcmNofDEwfHxibGFua3xlbnwwfHx8fDE2ODkwNjgyNzQ&ixlib=rb-1.2.1&q=80&w=1080');
+ background-size: cover;
+ background-position: center;
+ height: 500px;
+ display: flex;
+ justify-content: center;
+ align-items: center;
+}
+
+.home-page .about-section {
+ background-color: #333;
+ color: #fff;
+}
+.hero-section {
+ background: rgba(0, 0, 0, 0.6); /* Adds overlay */
+}
+
+.hero-content h1 {
+ font-size: 3rem;
+ font-weight: bold;
+}
+
+.cta-section {
+ background: rgba(0, 0, 0, 0.5); /* Adds overlay */
+}
+
+.cta-content h2 {
+ font-size: 2rem;
+}

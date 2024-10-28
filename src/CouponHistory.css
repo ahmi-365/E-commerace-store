@@ -1,0 +1,61 @@
+/* Main Container */
+.coupon-history-container {
+ background-color: #ffffff;
+ padding: 20px;
+ border-radius: 10px;
+ box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+ font-family: 'Arial', sans-serif;
+}
+
+/* Table Styling */
+.table-custom {
+ border: 1px solid #dee2e6;
+ font-size: 0.95rem;
+ margin-top: 20px;
+ color: #343a40;
+}
+
+.table-custom th {
+ background-color: #f8f9fa;
+ font-weight: 600;
+ text-align: center;
+ padding: 12px;
+ border-bottom: 2px solid #dee2e6;
+}
+
+.table-custom td {
+ text-align: center;
+ padding: 12px;
+ border: 1px solid #dee2e6;
+}
+
+/* Table Row Hover Effect */
+.table-custom tr:hover {
+ background-color: #f1f3f5;
+}
+
+/* Error Alert */
+.alert-custom {
+ font-size: 1rem;
+ margin-bottom: 20px;
+}
+
+/* Typography */
+h2 {
+ font-weight: 500;
+ color: #343a40;
+}
+
+/* No Coupons Message */
+.no-coupons-message {
+ font-style: italic;
+ color: #6c757d;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+ .table-custom th, .table-custom td {
+   padding: 8px;
+   font-size: 0.9rem;
+ }
+}
