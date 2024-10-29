@@ -9,21 +9,26 @@ const OrderHistory = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Fetch Orders with updated status periodically
   useEffect(() => {
     const fetchOrders = async () => {
+      setLoading(true); // Set loading true before fetching
       try {
         const response = await axios.get("http://localhost:5000/api/orders");
-        console.log("Fetched Orders:", response.data); // Log fetched orders
         setOrders(response.data);
       } catch (error) {
         console.error("Error fetching orders:", error);
         toast.error("Failed to fetch order history. Please try again later.");
       } finally {
-        setLoading(false);
+        setLoading(false); // Set loading false after fetching
       }
     };
 
+    // Fetch orders initially and every 10 seconds to check for status updates
     fetchOrders();
+    const interval = setInterval(fetchOrders, 10000); // Poll every 10 seconds
+
+    return () => clearInterval(interval); // Cleanup interval on component unmount
   }, []);
 
   const removeOrder = async (orderId) => {
@@ -63,7 +68,7 @@ const OrderHistory = () => {
                   <th>Discount (%)</th>
                   <th>Shipping Cost</th>
                   <th>Total Amount</th>
-                  <th>Coupon Code</th> {/* Updated column for Coupon Code */}
+                  <th>Coupon Code</th>
                   <th>Status</th>
                   <th>Details</th>
                   <th>Remove</th>
@@ -78,8 +83,8 @@ const OrderHistory = () => {
                     <td>{order.discountPercentage != null ? order.discountPercentage : "0"}%</td>
                     <td>${order.shippingCost != null ? order.shippingCost.toFixed(2) : "0.00"}</td>
                     <td>${order.totalAmount != null ? order.totalAmount.toFixed(2) : "0.00"}</td>
-                    <td>{order.couponCode || "No coupon used"}</td> {/* Display coupon code used */}
-                    <td>{order.status || "Pending"}</td>
+                    <td>{order.couponCode || "No coupon used"}</td>
+                    <td>{order.status || "Pending"}</td> {/* Display the payment status */}
                     <td style={{ textAlign: "center" }}>
                       <Link
                         to={`/orderdetails/${order._id}`}
