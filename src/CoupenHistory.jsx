@@ -81,7 +81,7 @@ const CouponHistory = () => {
 
       {/* Floating Button */}
       <Link to="/coupen" style={{ position: 'fixed', bottom: '20px', right: '20px' }}>
-        <Button variant="success" size="lg" style={{ borderRadius: '50%' }}>
+        <Button variant="success" size="lg" className="rounded-circle">
           +
         </Button>
       </Link>

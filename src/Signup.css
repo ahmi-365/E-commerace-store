@@ -1,19 +1,37 @@
-/* Login.css */
-
-.card {
- background-color: #f8f9fa; /* Light background for the card */
- border-radius: 10px; /* Rounded corners */
- box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Soft shadow effect */
+body {
+ font-family: 'Arial', sans-serif;
+ }
+ 
+ .card {
+  transition: transform 0.2s;
+ }
+ 
+ .card:hover {
+  transform: scale(1.05);
+ }
+ 
+ input {
+  transition: border-color 0.3s;
+ }
+ 
+ input:focus {
+  border-color: #4a90e2;
+  box-shadow: 0 0 5px rgba(74, 144, 226, 0.5);
+ }
+ 
+ .btn-primary {
+  background-color: #4a90e2;
+  border: none;
+ }
+ 
+ .btn-primary:hover {
+  background-color: #357ab8;
+ }
+ .icon {
+  color: white;
+  transition: color 0.3s ease;
 }
 
-h2 {
- color: #343a40; /* Darker color for the heading */
-}
-
-.text-primary {
- text-decoration: none; /* Remove underline from the link */
-}
-
-.text-primary:hover {
- text-decoration: underline; /* Underline on hover for better UX */
+.icon:hover {
+  color: #ddd; /* Change to a lighter shade on hover */
 }

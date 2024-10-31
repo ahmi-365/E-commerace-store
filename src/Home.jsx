@@ -30,11 +30,10 @@ const Home = () => {
             <Card className="mb-4 shadow-sm">
               <Card.Img 
                 variant="top" 
-                src={product1}  // Use imported local image
+                src={product1} 
                 alt="Product 1" 
               />
               <Card.Body>
-                {/* <Card.Title>Iphone</Card.Title> */}
                 <Card.Text>Explore the best features of this product.</Card.Text>
                 <Button variant="primary" as={Link} to="/products">View Product</Button>
               </Card.Body>
@@ -46,11 +45,10 @@ const Home = () => {
             <Card className="mb-4 shadow-sm">
               <Card.Img 
                 variant="top" 
-                src={product2}  // Use imported local image
+                src={product2} 
                 alt="Product 2" 
               />
               <Card.Body>
-                {/* <Card.Title>Product 2</Card.Title> */}
                 <Card.Text>Check out the premium features here.</Card.Text>
                 <Button variant="primary" as={Link} to="/products">View Product</Button>
               </Card.Body>
@@ -62,11 +60,10 @@ const Home = () => {
             <Card className="mb-4 shadow-sm">
               <Card.Img 
                 variant="top" 
-                src={product3}  // Use imported local image
+                src={product3} 
                 alt="Product 3" 
               />
               <Card.Body>
-                {/* <Card.Title>Product 3</Card.Title> */}
                 <Card.Text>Find out more about this top product.</Card.Text>
                 <Button variant="primary" as={Link} to="/products">View Product</Button>
               </Card.Body>

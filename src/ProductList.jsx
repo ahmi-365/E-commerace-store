@@ -88,7 +88,7 @@ const ProductList = ({ addToCart, deleteProduct }) => {
 
   return (
     <>
-      <RouterLink to="/add-product" style={{ position: "fixed", bottom: 20, right: 20 }}>
+      <RouterLink to="/add-product" style={{ position: "fixed", bottom: 20, right: 20, zIndex: 1000 }}>
         <IconButton
           sx={{
             bgcolor: "success.main",
@@ -286,14 +286,12 @@ const ProductList = ({ addToCart, deleteProduct }) => {
               <Typography>No products found.</Typography>
             )}
           </Grid>
-          {/* Pagination Control */}
-          <Grid container justifyContent="center" sx={{ mt: 2 }}>
-            <Pagination
-              count={totalPages}
-              page={currentPage}
-              onChange={handlePageChange}
-            />
-          </Grid>
+          <Pagination
+            count={totalPages}
+            page={currentPage}
+            onChange={handlePageChange}
+            sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}
+          />
         </Grid>
       </Grid>
       <ToastContainer />

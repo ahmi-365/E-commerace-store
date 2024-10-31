@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Card, Col, Row, Container, Badge, Alert } from 'react-bootstrap';
+import { Card, Col, Row, Container, Badge, Alert, Spinner } from 'react-bootstrap';
 import axios from 'axios';
+import './OrderDetails.css';
 
 const OrderDetails = () => {
-    const { orderId } = useParams(); // Get orderId from the URL parameters
+    const { orderId } = useParams();
     const [orderDetails, setOrderDetails] = useState(null);
     const [error, setError] = useState(null);
 
@@ -13,8 +14,8 @@ const OrderDetails = () => {
             if (orderId) {
                 try {
                     const response = await axios.get(`https://m-store-server-ryl5.onrender.com/api/orders/${orderId}`);
-                    console.log('Order details fetched:', response.data); // Debugging log
-                    setOrderDetails(response.data); // Ensure the correct data is assigned
+                    console.log('Order details fetched:', response.data);
+                    setOrderDetails(response.data);
                 } catch (error) {
                     console.error('Error fetching order details:', error);
                     setError('Failed to fetch order details. Please try again.');
@@ -32,12 +33,11 @@ const OrderDetails = () => {
     }
 
     if (!orderDetails) {
-        return <div className="text-center my-5">Loading order details...</div>;
+        return <div className="text-center my-5"><Spinner animation="border" role="status" /><span className="ms-2">Loading order details...</span></div>;
     }
 
-    // Use optional chaining (?.) to prevent crashes when accessing potentially undefined properties
     const { _id, totalAmount, shippingCost, discountPercentage, createdAt } = orderDetails?.order || {};
-    const items = orderDetails?.items || []; // Safely access items array
+    const items = orderDetails?.items || [];
 
     if (!_id) {
         return <Alert variant="danger" className="text-center">Order details could not be retrieved.</Alert>;
@@ -46,7 +46,7 @@ const OrderDetails = () => {
     return (
         <Container className="order-details-container my-5">
             <h2 className="text-center mb-4">Order Details</h2>
-            <div className="order-summary bg-light p-4 rounded mb-5">
+            <div className="order-summary bg-light p-4 rounded mb-5 shadow-sm">
                 <h4 className="text-secondary mb-3">Order ID: <Badge bg="secondary">{_id}</Badge></h4>
                 <p className="mb-1"><strong>Total Amount:</strong> <span className="text-success">${totalAmount?.toFixed(2)}</span></p>
                 <p className="mb-1"><strong>Shipping Cost:</strong> <span className="text-success">${shippingCost?.toFixed(2)}</span></p> 
@@ -54,16 +54,18 @@ const OrderDetails = () => {
                 <p className="mb-0"><strong>Order Date:</strong> {new Date(createdAt).toLocaleDateString()}</p>
             </div>
 
-            <Row>
+            <Row xs={1} sm={2} md={3} lg={4} className="g-4">
                 {items.length > 0 ? items.map((item, index) => (
-                    <Col key={index} md={6} lg={4} className="mb-4">
+                    <Col key={index}>
                         <Card className="shadow-sm border-0 h-100">
-                            <Card.Img 
-                                variant="top" 
-                                src={`https://m-store-server-ryl5.onrender.com/${item.imageUrl}`} 
-                                alt={item.name}
-                                className="rounded-top"
-                            />
+                            <div className="image-container">
+                                <Card.Img 
+                                    variant="top" 
+                                    src={`https://m-store-server-ryl5.onrender.com/${item.imageUrl}`} 
+                                    alt={item.name}
+                                    className="rounded-top"
+                                />
+                            </div>
                             <Card.Body className="d-flex flex-column">
                                 <Card.Title className="text-primary">{item.name}</Card.Title>
                                 <Card.Text className="flex-grow-1">

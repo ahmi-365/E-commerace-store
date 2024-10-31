@@ -20,6 +20,7 @@ import './App.css';
 import Coupon from "./Coupen";
 import ApplyCoupen from "./ApplyCoupen";
 import CoupenHistory from "./CoupenHistory";
+import LoadingSpinner from "./LoadingSpinner";
 
 const App = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -144,11 +145,11 @@ const App = () => {
       />
       {/* <ToastContainer position="top-center" autoClose={3000} hideProgressBar={false} closeOnClick draggable pauseOnHover theme="light" /> */}
       <div className="container mt-4">
-        {loading ? (
-          <div>Loading products...</div>
-        ) : error ? (
-          <div className="text-danger">{error}</div>
-        ) : (
+      {loading ? (
+    <LoadingSpinner message="Loading products..." />
+  ) : error ? (
+    <div className="text-danger">{error}</div>
+  ) : (
           <Routes>
             <Route path="/add-product" element={<ProductForm fetchProducts={fetchProducts} />} />
             <Route path="/products" element={<ProductList products={products} addToCart={addToCart} deleteProduct={deleteProduct} />} />

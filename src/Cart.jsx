@@ -14,6 +14,7 @@ import { faPlus, faMinus, faTimes } from "@fortawesome/free-solid-svg-icons";
 import React, { useState, useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Link, useNavigate } from "react-router-dom";
+import "./Cart.css"
 
 export default function PaymentMethods({
   cartItems,

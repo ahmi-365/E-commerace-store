@@ -9,36 +9,61 @@ import {
     Card,
     CardContent,
     CardActions,
-    FormControl,
-    InputLabel,
-    Select,
-    MenuItem,
-} from '@mui/material'; // Import Material-UI components
+    Box,
+    Avatar,
+    IconButton,
+    CircularProgress,
+    styled,
+} from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
+import PhotoCamera from '@mui/icons-material/PhotoCamera';
+
+// Custom styled components
+const StyledCard = styled(Card)(({ theme }) => ({
+    borderRadius: 20,
+    boxShadow: theme.shadows[10],
+    padding: '20px',
+    backgroundColor: '#f5f5f5',
+    border: '1px solid #e0e0e0',
+}));
+
+const UploadButton = styled(Button)(({ theme }) => ({
+    backgroundColor: '#1976d2',
+    color: 'white',
+    '&:hover': {
+        backgroundColor: '#115293',
+    },
+}));
+
+const BackButton = styled(Button)(({ theme }) => ({
+    border: '1px solid #1976d2',
+    color: '#1976d2',
+    '&:hover': {
+        backgroundColor: '#e3f2fd',
+    },
+}));
 
 const ProductForm = ({ fetchProducts }) => {
     const [name, setName] = useState('');
     const [price, setPrice] = useState('');
     const [description, setDescription] = useState('');
-    const [sku, setSku] = useState(''); // SKU field
-    const [brand, setBrand] = useState(''); // Brand field
-    const [category, setCategory] = useState(''); // Category field
-    const [size, setSize] = useState(''); // Size field
-    const [color, setColor] = useState(''); // Color field
+    const [sku, setSku] = useState('');
+    const [brand, setBrand] = useState('');
+    const [category, setCategory] = useState('');
     const [image, setImage] = useState(null);
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
         const formData = new FormData();
         formData.append('name', name);
         formData.append('price', price);
         formData.append('description', description);
-        formData.append('sku', sku); // Add SKU to form data
-        formData.append('brand', brand); // Add brand to form data
-        formData.append('category', category); // Add category to form data
-        formData.append('size', size); // Add size to form data
-        formData.append('color', color); // Add color to form data
+        formData.append('sku', sku);
+        formData.append('brand', brand);
+        formData.append('category', category);
         formData.append('image', image);
 
         try {
@@ -56,10 +81,8 @@ const ProductForm = ({ fetchProducts }) => {
                 setSku('');
                 setBrand('');
                 setCategory('');
-                setSize('');
-                setColor('');
                 setImage(null);
-                fetchProducts(); // Call fetchProducts to refresh the list
+                fetchProducts();
                 alert('Product added successfully!');
                 navigate('/products');
             } else {
@@ -70,22 +93,29 @@ const ProductForm = ({ fetchProducts }) => {
         } catch (error) {
             console.error('Error adding product:', error);
             alert('Error adding product');
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
         <Container>
             <Grid container justifyContent="center" sx={{ mt: 5 }}>
-                <Grid item xs={12} sm={8} md={6}>
-                    <Card>
+                <Grid item xs={12} sm={10} md={8} lg={6}>
+                    <StyledCard>
                         <CardContent>
-                            <Typography variant="h5" component="h2" gutterBottom>
+                            <Box display="flex" justifyContent="center" mb={2}>
+                                <Avatar sx={{ width: 80, height: 80, backgroundColor: '#1976d2' }}>
+                                    <PhotoCamera sx={{ width: 40, height: 40 }} />
+                                </Avatar>
+                            </Box>
+                            <Typography variant="h4" component="h2" align="center" gutterBottom sx={{ fontWeight: 'bold', color: '#333' }}>
                                 Add New Product
                             </Typography>
                             <form onSubmit={handleSubmit}>
                                 <TextField
                                     fullWidth
-                                    label="Name"
+                                    label="Product Name"
                                     variant="outlined"
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
@@ -140,7 +170,7 @@ const ProductForm = ({ fetchProducts }) => {
                                     required
                                     margin="normal"
                                 />
-                               
+
                                 <input
                                     accept="image/*"
                                     style={{ display: 'none' }}
@@ -150,24 +180,24 @@ const ProductForm = ({ fetchProducts }) => {
                                     required
                                 />
                                 <label htmlFor="image-upload">
-                                    <Button variant="contained" component="span" sx={{ mt: 2 }}>
+                                    <UploadButton variant="contained" component="span" sx={{ mt: 2 }} startIcon={<PhotoCamera />}>
                                         Upload Image
-                                    </Button>
+                                    </UploadButton>
                                 </label>
                                 <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
                                     {image ? image.name : 'No file chosen'}
                                 </Typography>
                                 <CardActions sx={{ justifyContent: 'space-between', mt: 2 }}>
-                                    <Link to="/products" style={{ textDecoration: 'none', color: 'black' }}>
-                                        Back to Products
+                                    <Link to="/products" style={{ textDecoration: 'none' }}>
+                                        <BackButton variant="outlined">Back to Products</BackButton>
                                     </Link>
-                                    <Button variant="contained" color="primary" type="submit">
-                                        Add Product
+                                    <Button variant="contained" color="primary" type="submit" disabled={loading}>
+                                        {loading ? <CircularProgress size={24} color="inherit" /> : 'Add Product'}
                                     </Button>
                                 </CardActions>
                             </form>
                         </CardContent>
-                    </Card>
+                    </StyledCard>
                 </Grid>
             </Grid>
         </Container>

@@ -1,20 +1,22 @@
 import React, { useState } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css'; // Ensure Bootstrap is imported
-import { Link, useNavigate } from 'react-router-dom'; // Import Link for navigation and useNavigate for redirection
-import './Login.css'; // Import custom CSS for additional styling
+import { Helmet } from 'react-helmet'; // Import Helmet
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { Link, useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 const Login = ({ handleLogin }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false); // Add loading state
-  const navigate = useNavigate(); // Use useNavigate for redirection
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(''); // Reset error state before each attempt
-    setLoading(true); // Set loading state to true
+    setError('');
+    setLoading(true);
 
     try {
       const response = await fetch('https://m-store-server-ryl5.onrender.com/api/users/login', {
@@ -26,26 +28,28 @@ const Login = ({ handleLogin }) => {
       });
 
       if (!response.ok) {
-        const { message } = await response.json(); // Get the error message from response
-        throw new Error(message || 'Login failed. Please check your credentials.'); // Throw error if response is not ok
+        const { message } = await response.json();
+        throw new Error(message || 'Login failed. Please check your credentials.');
       }
 
-      const userData = await response.json(); // Read the response body only once
-
+      const userData = await response.json();
       localStorage.setItem('user', JSON.stringify(userData));
       handleLogin(userData.token, userData.email, userData.userId);
 
-      navigate('/'); // Redirect after successful login (adjust the route as necessary)
+      navigate('/');
     } catch (err) {
-      setError(err.message); // Set error message to display
+      setError(err.message);
     } finally {
-      setLoading(false); // Set loading state back to false after request completes
+      setLoading(false);
     }
   };
 
   return (
     <div className="container d-flex justify-content-center align-items-center min-vh-100">
-      <div className="card shadow p-4" style={{ width: '400px' }}>
+      <Helmet>
+        <title>Login -ECommerace</title> {/* Set the page title */}
+      </Helmet>
+      <div className="card shadow-lg p-4 rounded" style={{ width: '100%', maxWidth: '400px' }}>
         <h2 className="text-center mb-4">Login</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
@@ -58,24 +62,32 @@ const Login = ({ handleLogin }) => {
               required
             />
           </div>
-          <div className="mb-3">
+          <div className="mb-3 position-relative">
             <input
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               className="form-control"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Password"
               required
             />
+            <button
+              type="button"
+              className="position-absolute top-50 end-0 translate-middle-y border-0 bg-transparent"
+              onClick={() => setShowPassword(!showPassword)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+            </button>
           </div>
           <button
             type="submit"
             className="btn btn-primary w-100 mb-3"
             disabled={loading}
           >
-            {loading ? 'Logging in...' : 'Login'} {/* Show loading indicator */}
+            {loading ? 'Logging in...' : 'Login'}
           </button>
-          {error && <p className="text-danger text-center mt-3">{error}</p>} {/* Display error message */}
+          {error && <p className="text-danger text-center mt-3">{error}</p>}
         </form>
         <div className="text-center">
           <p className="mb-0">New user? <Link to="/signup" className="text-primary">Sign up here</Link></p>

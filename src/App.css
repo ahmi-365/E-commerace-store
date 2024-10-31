@@ -7,3 +7,49 @@ body {
   overflow-x: hidden; /* Prevent horizontal scrolling */
   margin: 0; /* Reset margin */
 }
+/* Custom CSS for PaymentMethods component */
+@media (max-width: 768px) {
+  /* Make cards full width on smaller screens */
+  .card {
+    width: 100%;
+  }
+ 
+  /* Adjust padding for the Card Body */
+  .card-body {
+    padding: 1rem; /* Reduce padding on smaller screens */
+  }
+ 
+  /* Ensure images are responsive */
+  .bg-image img {
+    width: 100%; /* Full width for images */
+    height: auto; /* Maintain aspect ratio */
+  }
+ 
+  /* Align items in the summary section vertically */
+  .list-group-item {
+    flex-direction: column; /* Stack items vertically */
+    align-items: flex-start; /* Align items to start */
+  }
+ 
+  /* Responsive button adjustments */
+  .btn-lg {
+    width: 100%; /* Full width for buttons */
+  }
+ 
+  /* Input fields */
+  .form-control {
+    width: 100%; /* Full width for input fields */
+    margin-bottom: 0.5rem; /* Space between inputs */
+  }
+ 
+  /* Adjust the row and column layout */
+  .row {
+    flex-direction: column; /* Stack rows on smaller screens */
+  }
+ 
+  /* Adjust card header text size */
+  .card-header h5 {
+    font-size: 1.25rem; /* Slightly smaller for mobile */
+  }
+ }
+ 
