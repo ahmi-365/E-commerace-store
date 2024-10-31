@@ -53,21 +53,22 @@ export default function PaymentMethods({
 
   const calculateTotalWithExtras = () => {
     let total = calculateTotalWithoutExtras();
-
+  
     // Include shipping cost only if enableShipping is true
     const validShippingCost = enableShipping ? parseFloat(shippingCost) || 0 : 0;
     total += validShippingCost;
-
+  
     // Apply discount if any
     const validDiscount =
       (parseFloat(discountPercentage) || 0) > 0
         ? total * (parseFloat(discountPercentage) / 100)
         : 0;
-
+  
     total -= validDiscount;
-
+  
     return total;
   };
+  
 
   const handleIncrease = (itemId, currentQuantity) => {
     updateQuantity(itemId, currentQuantity + 1);
@@ -207,7 +208,7 @@ export default function PaymentMethods({
                               src={`https://m-store-server-ryl5.onrender.com/${
                                 item.imageUrl || "default-image.jpg"
                               }`}
-                              className="img-fluid rounded" // Changed to img-fluid
+                              className="w-100 rounded"
                               alt={item.name}
                             />
                           </div>
@@ -238,7 +239,7 @@ export default function PaymentMethods({
                         <Col lg="4" md="6" className="mb-4 mb-lg-0">
                           <InputGroup
                             className="mb-4"
-                            style={{ maxWidth: "300px", width: "100%" }} // Added width: "100%"
+                            style={{ maxWidth: "300px" }}
                           >
                             <Button
                               variant="outline-secondary"
@@ -266,63 +267,126 @@ export default function PaymentMethods({
                               <FontAwesomeIcon icon={faPlus} />
                             </Button>
                           </InputGroup>
-                          <Button
-                            variant="danger"
-                            onClick={() => removeItem(item._id)}
-                          >
-                            <FontAwesomeIcon icon={faTimes} /> Remove
-                          </Button>
+
+                          <div className="d-flex align-items-center justify-content-between">
+                            <p className="text-start text-md-center">
+                              <strong>${item.price.toFixed(2)}</strong>
+                            </p>
+                            <Button
+                              variant="link"
+                              className="text-secondary"
+                              onClick={() => removeItem(item._id)}
+                            >
+                              <FontAwesomeIcon icon={faTimes} />
+                            </Button>
+                          </div>
                         </Col>
                       </Row>
-                      <hr />
+                      <hr className="my-4" />
                     </React.Fragment>
                   ))}
-                  <div className="d-flex justify-content-between">
-                    <h5>Total:</h5>
-                    <h5>${calculateTotalWithExtras().toFixed(2)}</h5>
-                  </div>
-
-                  <div className="d-flex justify-content-between align-items-center">
-                    <FormCheck
-                      type="checkbox"
-                      label="Enable Shipping"
-                      checked={enableShipping}
-                      onChange={(e) => setEnableShipping(e.target.checked)}
-                    />
-                    {enableShipping && (
-                      <InputGroup className="mb-3">
-                        <FormControl
-                          placeholder="Shipping Cost"
-                          value={shippingCost}
-                          onChange={(e) => setShippingCost(e.target.value)}
-                        />
-                      </InputGroup>
-                    )}
-                  </div>
-
-                  <div className="mb-3">
-                    <InputGroup>
-                      <FormControl
-                        placeholder="Coupon Code"
-                        value={couponCode}
-                        onChange={(e) => setCouponCode(e.target.value)}
-                      />
-                      <Button onClick={validateCoupon}>Validate</Button>
-                    </InputGroup>
-                    {couponError && <div className="text-danger">{couponError}</div>}
-                  </div>
-
-                  <Button
-                    variant="success"
-                    onClick={makePayment}
-                    disabled={loading}
-                    className="w-100" // Full width for button
-                  >
-                    {loading ? "Processing..." : "Proceed to Pay"}
-                  </Button>
                 </Card.Body>
               </Card>
             )}
+          </Col>
+          <Col md="4">
+            <Card className="mb-4">
+              <Card.Header>
+                <h5 className="mb-0">Summary</h5>
+              </Card.Header>
+              <Card.Body>
+                <ListGroup className="list-group-flush">
+                  <ListGroup.Item className="d-flex justify-content-between align-items-center border-0 px-0 pb-0">
+                    Total without shipping or discount:
+                    <span>${calculateTotalWithoutExtras().toFixed(2)}</span>
+                  </ListGroup.Item>
+
+                  <ListGroup.Item className="d-flex justify-content-between align-items-center px-0">
+                    Shipping?
+                    <FormCheck
+                      type="switch"
+                      id="custom-switch"
+                      label={enableShipping}
+                      checked={enableShipping}
+                      onChange={(e) => setEnableShipping(e.target.checked)}
+                    />
+                  </ListGroup.Item>
+
+                  {/* Only show the shipping input if enableShipping is true */}
+                  {enableShipping && (
+                    <ListGroup.Item className="d-flex justify-content-between align-items-center px-0">
+                      Shipping cost
+                      <FormControl
+                        type="number"
+                        placeholder="Enter shipping cost"
+                        value={shippingCost}
+                        onChange={(e) => setShippingCost(e.target.value)}
+                      />
+                    </ListGroup.Item>
+                  )}
+
+                  <ListGroup.Item className="d-flex justify-content-between align-items-center px-0">
+                    Discount: ({discountPercentage}%)
+                    <span>
+                      $
+                      {(
+                        (calculateTotalWithoutExtras() *
+                          parseFloat(discountPercentage || 0)) /
+                        100
+                      ).toFixed(2)}
+                    </span>
+                  </ListGroup.Item>
+
+                  <ListGroup.Item className="d-flex justify-content-between align-items-center border-0 px-0 mb-3">
+                    <strong>Total with shipping & discount</strong>
+                    <span>
+                      <strong>${calculateTotalWithExtras().toFixed(2)}</strong>
+                    </span>
+                  </ListGroup.Item>
+                </ListGroup>
+
+                <Button
+                  className="w-100 btn-lg"
+                  disabled={loading || cartItems.length === 0}
+                  onClick={makePayment}
+                >
+                  {loading ? "Processing..." : "Proceed to Pay"}
+                </Button>
+
+                {error && (
+                  <div className="mt-3">
+                    <p className="text-danger">{error}</p>
+                  </div>
+                )}
+              </Card.Body>
+            </Card>
+
+            <Card className="mb-4">
+              <Card.Body>
+                <InputGroup className="mb-3">
+                  <FormControl
+                    placeholder="Coupon Code"
+                    aria-label="Coupon Code"
+                    aria-describedby="basic-addon2"
+                    value={couponCode}
+                    onChange={(e) => setCouponCode(e.target.value)}
+                  />
+                  <Button
+                    variant="outline-secondary"
+                    id="button-addon2"
+                    onClick={validateCoupon}
+                  >
+                    Apply Coupon
+                  </Button>
+                </InputGroup>
+
+                {isCouponValid ? (
+                  <p className="text-success">Congrats! You got {discountPercentage}% discount</p>
+                ) : (
+                  couponError && <p className="text-danger">{couponError}</p>
+                )}
+              </Card.Body>
+            </Card>
           </Col>
         </Row>
       </Container>
