@@ -13,7 +13,7 @@ export const UserProvider = ({ children }) => {
       setIsLoggedIn(true);
       setUserEmail(user.email);
     }
-  }, []);   
+  }, []);  
 
   return ( 
     <UserContext.Provider value={{ userEmail, isLoggedIn, setUserEmail, setIsLoggedIn }}>
