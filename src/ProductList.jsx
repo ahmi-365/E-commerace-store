@@ -44,7 +44,7 @@ const ProductList = ({ addToCart, deleteProduct }) => {
     }).toString();
 
     try {
-      const response = await fetch(`http://localhost:5000/api/products?${filterParams}`);
+      const response = await fetch(`https://m-store-server-ryl5.onrender.com/api/products?${filterParams}`);
       const data = await response.json();
       setProducts(data.products);
       setTotalPages(data.totalPages);
@@ -175,7 +175,7 @@ const ProductList = ({ addToCart, deleteProduct }) => {
                     <CardOverflow>
                       <AspectRatio sx={{ minWidth: 200 }}>
                         <img
-                          src={`http://localhost:5000/${product.imageUrl}`}
+                          src={`https://m-store-server-ryl5.onrender.com/${product.imageUrl}`}
                           alt={product.name}
                           style={{ width: "100%", height: "auto" }}
                         />

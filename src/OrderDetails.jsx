@@ -12,7 +12,7 @@ const OrderDetails = () => {
         const fetchOrderDetails = async () => {
             if (orderId) {
                 try {
-                    const response = await axios.get(`http://localhost:5000/api/orders/${orderId}`);
+                    const response = await axios.get(`https://m-store-server-ryl5.onrender.com/api/orders/${orderId}`);
                     console.log('Order details fetched:', response.data); // Debugging log
                     setOrderDetails(response.data); // Ensure the correct data is assigned
                 } catch (error) {

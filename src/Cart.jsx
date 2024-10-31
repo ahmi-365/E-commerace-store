@@ -99,7 +99,7 @@ export default function PaymentMethods({
 
       // Increment coupon usage if the coupon is valid
       if (isCouponValid) {
-        const incrementResponse = await fetch("http://localhost:5000/api/coupons/increment-usage", {
+        const incrementResponse = await fetch("https://m-store-server-ryl5.onrender.com/api/coupons/increment-usage", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ code: couponCode }),
@@ -115,7 +115,7 @@ export default function PaymentMethods({
       }
 
       const response = await fetch(
-        "http://localhost:5000/api/create-checkout-session",
+        "https://m-store-server-ryl5.onrender.com/api/create-checkout-session",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -154,7 +154,7 @@ export default function PaymentMethods({
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/coupons/validate",
+        "https://m-store-server-ryl5.onrender.com/api/coupons/validate",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -205,7 +205,7 @@ export default function PaymentMethods({
                         <Col lg="3" md="12" className="mb-4 mb-lg-0">
                           <div className="bg-image rounded hover-zoom hover-overlay">
                             <img
-                              src={`http://localhost:5000/${
+                              src={`https://m-store-server-ryl5.onrender.com/${
                                 item.imageUrl || "default-image.jpg"
                               }`}
                               className="w-100 rounded"

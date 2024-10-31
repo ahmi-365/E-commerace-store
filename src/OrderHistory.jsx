@@ -14,7 +14,7 @@ const OrderHistory = () => {
     const fetchOrders = async () => {
       setLoading(true); // Set loading true before fetching
       try {
-        const response = await axios.get("http://localhost:5000/api/orders");
+        const response = await axios.get("https://m-store-server-ryl5.onrender.com/api/orders");
         setOrders(response.data);
       } catch (error) {
         console.error("Error fetching orders:", error);

@@ -18,7 +18,7 @@ const OrderSuccess = () => {
                         {cartItems.map((item, index) => (
                             <Col key={index} md={4} className="mb-4">
                                 <Card>
-                                    <Card.Img variant="top" src={`http://localhost:5000/${item.imageUrl}`} alt={item.name} />
+                                    <Card.Img variant="top" src={`https://m-store-server-ryl5.onrender.com/${item.imageUrl}`} alt={item.name} />
                                     <Card.Body>
                                         <Card.Title>{item.name}</Card.Title>
                                         <Card.Text>

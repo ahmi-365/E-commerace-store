@@ -11,7 +11,7 @@ const ApplyCoupon = ({ onApplyCoupon }) => {
 
   const handleApplyCoupon = async () => {
     try {
-      const response = await axios.post('http://localhost:5000/api/coupons/validate', { code: couponCode });
+      const response = await axios.post('https://m-store-server-ryl5.onrender.com/api/coupons/validate', { code: couponCode });
 
       // Check if the response contains the expected properties
       if (response.data) {

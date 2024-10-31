@@ -11,7 +11,7 @@ const CouponHistory = () => {
   useEffect(() => {
     const fetchCoupons = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/coupons');
+        const response = await axios.get('https://m-store-server-ryl5.onrender.com/api/coupons');
         setCoupons(response.data);
       } catch (err) {
         setError('Failed to fetch coupons. Please try again later.');

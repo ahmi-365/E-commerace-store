@@ -35,7 +35,7 @@ const App = () => {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:5000/api/products");
+      const response = await fetch("https://m-store-server-ryl5.onrender.com/api/products");
       if (!response.ok) throw new Error("Network response was not ok");
       const data = await response.json();
       setProducts(data);
@@ -95,7 +95,7 @@ const App = () => {
 
   const deleteProduct = async (productId) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/products/${productId}`, { method: "DELETE" });
+      const response = await fetch(`https://m-store-server-ryl5.onrender.com/api/products/${productId}`, { method: "DELETE" });
       if (!response.ok) throw new Error("Failed to delete product");
       fetchProducts();
     } catch (error) {

@@ -32,7 +32,7 @@ const ProductDetails = ({ addToCart }) => {
   useEffect(() => {
     const fetchProductDetails = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/products/${id}`);
+        const response = await axios.get(`https://m-store-server-ryl5.onrender.com/api/products/${id}`);
         console.log("Fetched product details:", response.data);
 
         if (response.data) {
@@ -60,7 +60,7 @@ const ProductDetails = ({ addToCart }) => {
   }
 
   const productImage = productDetailItem.imageUrl 
-    ? `http://localhost:5000/${productDetailItem.imageUrl}`
+    ? `https://m-store-server-ryl5.onrender.com/${productDetailItem.imageUrl}`
     : null;
 
   // Function to handle adding the product to the cart

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { Button, Form, Alert, Card } from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom"; // Import useNavigate for navigation
+import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
 import './Coupon.css'; // Optional: Create a CSS file for additional custom styles
 
 export default function Coupon() {
@@ -21,9 +21,15 @@ export default function Coupon() {
     setError("");
     setSuccess("");
 
+    // Validation check
+    if (discount <= 0 || limit <= 0) {
+      setError("Discount and Usage Limit must be greater than zero.");
+      return;
+    }
+
     try {
       // Send a POST request to the backend to create a new coupon
-      const response = await axios.post("http://localhost:5000/api/coupons", {
+      const response = await axios.post("https://m-store-server-ryl5.onrender.com/api/coupons", {
         code: couponCode,
         discountPercentage: discount,
         expiryDate: expiry,
@@ -31,6 +37,13 @@ export default function Coupon() {
       });
 
       setSuccess("Coupon created successfully!");
+      
+      // Clear form fields
+      setCouponCode("");
+      setDiscount("");
+      setExpiry("");
+      setLimit("");
+
       console.log("Coupon created:", response.data);
       
       // Navigate to the coupon history page after successful creation

@@ -42,7 +42,7 @@ const ProductForm = ({ fetchProducts }) => {
         formData.append('image', image);
 
         try {
-            const response = await fetch('http://localhost:5000/api/products', {
+            const response = await fetch('https://m-store-server-ryl5.onrender.com/api/products', {
                 method: 'POST',
                 body: formData,
             });

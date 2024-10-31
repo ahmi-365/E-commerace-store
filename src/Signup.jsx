@@ -20,7 +20,7 @@ const SignUp = () => {
       return;
     }
 
-    axios.post('http://localhost:5000/api/users/signup', { email, password })
+    axios.post('https://m-store-server-ryl5.onrender.com/api/users/signup', { email, password })
       .then(response => {
         setMessage(response.data.message);  // Display success message
         navigate('/login');  // Redirect to login page after successful sign-up
