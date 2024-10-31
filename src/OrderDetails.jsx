@@ -60,7 +60,7 @@ const OrderDetails = () => {
                         <Card className="shadow-sm border-0 h-100">
                             <Card.Img 
                                 variant="top" 
-                                src={`http://localhost:5000/${item.imageUrl}`} 
+                                src={`https://m-store-server-ryl5.onrender.com/${item.imageUrl}`} 
                                 alt={item.name}
                                 className="rounded-top"
                             />
