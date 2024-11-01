@@ -1,0 +1,11 @@
+version: 1
+services:
+  - type: web
+    name: E-commerce-Store  
+    env: node
+    buildCommand: npm run build
+    startCommand: npm start
+    staticPublishPath: dist
+    routes:
+      - src: /*
+        dest: /index.html
