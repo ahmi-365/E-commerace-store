@@ -8,10 +8,9 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/api': 'http://localhost:5000', // Adjust the port if your server runs on a different one
+      '/api': 'https://e-commerace-store.onrender.com', // Use the Render URL
     },
   },
-  // Adding fallback for non-root paths
   resolve: {
     alias: {
       '@': '/src',
