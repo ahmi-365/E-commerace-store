@@ -15,6 +15,7 @@ import React, { useState, useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Link, useNavigate } from "react-router-dom";
 import "./Cart.css"
+import { Helmet } from "react-helmet";
 
 export default function PaymentMethods({
   cartItems,
@@ -181,10 +182,14 @@ export default function PaymentMethods({
   };
 
   return (
+   
     <section className="h-100 gradient-custom">
       <Container className="py-5 h-100">
         <Row className="justify-content-center my-4">
           <Col md="8">
+          <Helmet>
+        <title>Login -ECommerace</title> {/* Set the page title */}
+      </Helmet>
             {cartItems.length === 0 ? (
               <Card className="mb-4">
                 <Card.Body>
