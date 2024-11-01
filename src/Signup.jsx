@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'; // Import Link for navigat
 import './Signup.css'; // Import custom CSS for additional styling
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'; // Import Font Awesome
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'; // Import eye icons
+import { Helmet } from 'react-helmet';
 
 const SignUp = () => {
   const [email, setEmail] = useState('');
@@ -126,6 +127,9 @@ const SignUp = () => {
           <p className="mb-0">Already have an account? <Link to="/login" className="text-primary">Log in here</Link></p>
         </div>
       </div>
+      <Helmet>
+        <title>Sign up   -ECommerace</title> {/* Set the page title */}
+      </Helmet>
     </div>
   );
 };

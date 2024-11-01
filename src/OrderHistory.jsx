@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { FaArrowRight, FaTrash } from "react-icons/fa";
 import 'react-toastify/dist/ReactToastify.css';
 import { Card, Button, Row, Col } from "react-bootstrap";
+import { Helmet } from "react-helmet";
 
 const OrderHistory = () => {
   const [orders, setOrders] = useState([]);
@@ -96,6 +97,9 @@ const OrderHistory = () => {
           )}
         </Row>
       )}
+      <Helmet>
+        <title>Order History -ECommerace</title> {/* Set the page title */}
+      </Helmet>
       <ToastContainer />
     </div>
   );

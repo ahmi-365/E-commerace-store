@@ -188,7 +188,7 @@ export default function PaymentMethods({
         <Row className="justify-content-center my-4">
           <Col md="8">
           <Helmet>
-        <title>Login -ECommerace</title> {/* Set the page title */}
+        <title>Cart -ECommerace</title> {/* Set the page title */}
       </Helmet>
             {cartItems.length === 0 ? (
               <Card className="mb-4">

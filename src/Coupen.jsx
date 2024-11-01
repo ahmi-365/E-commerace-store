@@ -3,6 +3,7 @@ import axios from "axios";
 import { Button, Form, Alert, Card } from "react-bootstrap";
 import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
 import './Coupon.css'; // Optional: Create a CSS file for additional custom styles
+import { Helmet } from "react-helmet";
 
 export default function Coupon() {
   // Define the state for the coupon fields
@@ -78,7 +79,9 @@ export default function Coupon() {
               required
             />
           </Form.Group>
-
+          <Helmet>
+        <title>Coupen -ECommerace</title> {/* Set the page title */}
+      </Helmet>
           {/* Input for Discount */}
           <Form.Group controlId="discountPercentage">
             <Form.Label>Discount Percentage</Form.Label>

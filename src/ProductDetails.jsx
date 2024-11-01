@@ -5,6 +5,7 @@ import { AiOutlineHeart } from "react-icons/ai";
 import { BiShoppingBag } from "react-icons/bi";
 import { ToastContainer, toast } from "react-toastify"; // Import Toastify components
 import 'react-toastify/dist/ReactToastify.css'; // Import Toastify CSS
+import { Helmet } from "react-helmet";
 
 const ProductDetails = ({ addToCart }) => {
   const { id } = useParams();
@@ -177,6 +178,9 @@ const ProductDetails = ({ addToCart }) => {
       </div>
 
       {/* Toast container for showing notifications */}
+      <Helmet>
+        <title>Product Details -ECommerace</title> {/* Set the page title */}
+      </Helmet>
       <ToastContainer position="top-center" />
     </section>
   );

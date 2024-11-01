@@ -13,6 +13,7 @@ import "react-toastify/dist/ReactToastify.css";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import { Link as RouterLink } from "react-router-dom";
+import { Helmet } from "react-helmet";
 
 const ProductList = ({ addToCart, deleteProduct }) => {
   const [products, setProducts] = useState([]);
@@ -164,7 +165,9 @@ const ProductList = ({ addToCart, deleteProduct }) => {
             </Button>
           </Paper>
         </Grid>
-
+        <Helmet>
+        <title>Product List   -ECommerace</title> {/* Set the page title */}
+      </Helmet>
         {/* Product List */}
         <Grid item xs={12} sm={8} md={9}>
           <Grid container spacing={3}>

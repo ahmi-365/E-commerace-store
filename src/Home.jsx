@@ -7,10 +7,14 @@ import './Home.css'; // Assuming you have custom styles
 import product1 from './assets/images/product1.jpg';
 import product2 from './assets/images/product2.jpg';
 import product3 from './assets/images/product3.jpg';
+import { Helmet } from "react-helmet";
 
 const Home = () => {
   return (
     <div className="home-page">
+      <Helmet>
+        <title>Home -ECommerace</title> {/* Set the page title */}
+      </Helmet>
       {/* Hero Section */}
       <div className="hero-section text-center text-white">
         <Container>

@@ -17,6 +17,7 @@ import {
 } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
+import { Helmet } from 'react-helmet';
 
 // Custom styled components
 const StyledCard = styled(Card)(({ theme }) => ({
@@ -200,7 +201,11 @@ const ProductForm = ({ fetchProducts }) => {
                     </StyledCard>
                 </Grid>
             </Grid>
+            <Helmet>
+        <title>Add Product -ECommerace</title> {/* Set the page title */}
+      </Helmet>
         </Container>
+        
     );
 };
 

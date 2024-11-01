@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { Card, Col, Row, Container, Badge, Alert, Spinner } from 'react-bootstrap';
 import axios from 'axios';
 import './OrderDetails.css';
+import { Helmet } from 'react-helmet';
 
 const OrderDetails = () => {
     const { orderId } = useParams();
@@ -45,6 +46,9 @@ const OrderDetails = () => {
 
     return (
         <Container className="order-details-container my-5">
+            <Helmet>
+        <title>Order Details -ECommerace</title> {/* Set the page title */}
+      </Helmet>
             <h2 className="text-center mb-4">Order Details</h2>
             <div className="order-summary bg-light p-4 rounded mb-5 shadow-sm">
                 <h4 className="text-secondary mb-3">Order ID: <Badge bg="secondary">{_id}</Badge></h4>

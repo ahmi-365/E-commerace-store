@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Table, Alert, Container, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import './CouponHistory.css';
+import { Helmet } from 'react-helmet';
 
 const CouponHistory = () => {
   const [coupons, setCoupons] = useState([]);
@@ -39,6 +40,9 @@ const CouponHistory = () => {
   return (
     <Container className="coupon-history-container mt-5">
       <h2 className="text-center mb-4">Coupon History</h2>
+      <Helmet>
+        <title>Coupen History -ECommerace</title> {/* Set the page title */}
+      </Helmet>
       {error && <Alert variant="danger" className="alert-custom">{error}</Alert>}
       {coupons.length > 0 ? (
         <Table responsive className="table-custom">

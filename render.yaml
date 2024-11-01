@@ -1,7 +1,7 @@
 version: 1
 services:
   - type: web
-    name: E-commerce-Store  
+    name: E-Commerce-Store
     env: node
     buildCommand: npm run build
     startCommand: npm start
