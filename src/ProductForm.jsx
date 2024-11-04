@@ -85,33 +85,41 @@ const ProductForm = ({ fetchProducts }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-
+    
+        // Validate price
+        if (parseFloat(price) <= 0) {
+            alert('Price must be a positive number.');
+            setLoading(false);
+            return;
+        }
+    
         try {
-            // Check if an image is selected
             if (!image) {
                 alert('Please select an image to upload.');
                 setLoading(false);
                 return;
             }
-
-            // Upload image to Cloudinary
+    
             const imageUrl = await uploadImage(image);
             if (!imageUrl) {
                 alert('Image upload failed, please try again.');
                 setLoading(false);
                 return;
             }
-
+    
             const formData = {
                 name,
-                price,
+                price: parseFloat(price).toFixed(2), // Ensure price is a number with two decimals
                 description,
                 sku,
                 brand,
                 category,
-                image: imageUrl, // Use the Cloudinary URL here
+                image: imageUrl,
             };
-
+    
+            // Log the payload for debugging
+            console.log('Sending payload:', JSON.stringify(formData));
+    
             const response = await fetch('https://m-store-server-ryl5.onrender.com/api/products', {
                 method: 'POST',
                 headers: {
@@ -119,10 +127,11 @@ const ProductForm = ({ fetchProducts }) => {
                 },
                 body: JSON.stringify(formData),
             });
-
+    
             if (response.ok) {
                 const result = await response.json();
                 console.log('Product added successfully:', result);
+                // Reset form fields
                 setName('');
                 setPrice('');
                 setDescription('');
@@ -134,17 +143,18 @@ const ProductForm = ({ fetchProducts }) => {
                 alert('Product added successfully!');
                 navigate('/products');
             } else {
-                const errorMessage = await response.text();
+                const errorMessage = await response.json();
                 console.error('Failed to add product:', errorMessage);
-                alert(`Failed to add product: ${errorMessage}`);
+                alert(`Failed to add product: ${errorMessage.message || errorMessage}`);
             }
         } catch (error) {
             console.error('Error adding product:', error);
-            alert('Error adding product');
+            alert('Error adding product. Please try again.');
         } finally {
             setLoading(false);
         }
     };
+    
 
     return (
         <Container>

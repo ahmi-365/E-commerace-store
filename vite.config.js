@@ -4,16 +4,14 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   build: {
-    outDir: 'dist', // Ensure this matches the output directory
-  },
-  server: {
-    proxy: {
-      '/api': 'https://e-commerace-store.onrender.com', // Use the Render URL
-    },
+    outDir: 'dist', // Output directory for the production build
   },
   resolve: {
     alias: {
-      '@': '/src',
+      '@': '/src', // Setting up path alias for cleaner imports
     },
+  },
+  server: {
+    port: 5173, // Optional: Specify port for development server if needed
   },
 });
