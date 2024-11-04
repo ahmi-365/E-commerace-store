@@ -166,8 +166,8 @@ const ProductList = ({ addToCart, deleteProduct }) => {
           </Paper>
         </Grid>
         <Helmet>
-        <title>Product List   -ECommerace</title> {/* Set the page title */}
-      </Helmet>
+          <title>Product List - ECommerce</title> {/* Set the page title */}
+        </Helmet>
         {/* Product List */}
         <Grid item xs={12} sm={8} md={9}>
           <Grid container spacing={3}>
@@ -177,11 +177,16 @@ const ProductList = ({ addToCart, deleteProduct }) => {
                   <Card sx={{ maxWidth: "100%", boxShadow: "lg" }}>
                     <CardOverflow>
                       <AspectRatio sx={{ minWidth: 200 }}>
-                        <img
-                          src={`https://m-store-server-ryl5.onrender.com/${product.imageUrl}`}
-                          alt={product.name}
-                          style={{ width: "100%", height: "auto" }}
-                        />
+                        {/* Fetch the product image from Cloudinary */}
+                        {product.imageUrl ? (
+                          <img
+                            src={`https://res.cloudinary.com/dtc81tvun/image/upload/v${product.imageUrl}`}
+                            alt={product.name}
+                            style={{ width: "100%", height: "auto" }}
+                          />
+                        ) : (
+                          <Typography>No image available</Typography>
+                        )}
                       </AspectRatio>
                     </CardOverflow>
                     <CardContent>
@@ -289,11 +294,15 @@ const ProductList = ({ addToCart, deleteProduct }) => {
               <Typography>No products found.</Typography>
             )}
           </Grid>
+          {/* Pagination */}
           <Pagination
             count={totalPages}
             page={currentPage}
             onChange={handlePageChange}
-            sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}
+            color="primary"
+            variant="outlined"
+            shape="rounded"
+            sx={{ mt: 3 }}
           />
         </Grid>
       </Grid>

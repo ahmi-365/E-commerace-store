@@ -55,22 +55,55 @@ const ProductForm = ({ fetchProducts }) => {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
+    // Cloudinary upload function
+    const uploadImage = async (file) => {
+        const formData = new FormData();
+formData.append('file', selectedFile); // selectedFile is the image file to be uploaded
+formData.append('upload_preset', 'ml_default'); // Use your Cloudinary preset name
+
+        try {
+            const response = await fetch('https://api.cloudinary.com/v1_1/your_cloud_name/image/upload', {
+                method: 'POST',
+                body: formData,
+            });
+
+            const data = await response.json();
+            return data.secure_url; // Return the URL of the uploaded image
+        } catch (error) {
+            console.error('Image upload failed:', error);
+            return null; // Handle error as needed
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        const formData = new FormData();
-        formData.append('name', name);
-        formData.append('price', price);
-        formData.append('description', description);
-        formData.append('sku', sku);
-        formData.append('brand', brand);
-        formData.append('category', category);
-        formData.append('image', image);
 
         try {
+            // Upload image to Cloudinary
+            const imageUrl = await uploadImage(image);
+            if (!imageUrl) {
+                alert('Image upload failed, please try again.');
+                setLoading(false);
+                return;
+            }
+
+            const formData = {
+                name,
+                price,
+                description,
+                sku,
+                brand,
+                category,
+                image: imageUrl, // Use the Cloudinary URL here
+            };
+
             const response = await fetch('https://m-store-server-ryl5.onrender.com/api/products', {
                 method: 'POST',
-                body: formData,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
             });
 
             if (response.ok) {
@@ -202,10 +235,9 @@ const ProductForm = ({ fetchProducts }) => {
                 </Grid>
             </Grid>
             <Helmet>
-        <title>Add Product -ECommerace</title> {/* Set the page title */}
-      </Helmet>
+                <title>Add Product - ECommerace</title>
+            </Helmet>
         </Container>
-        
     );
 };
 
