@@ -58,20 +58,27 @@ const ProductForm = ({ fetchProducts }) => {
     // Cloudinary upload function
     const uploadImage = async (file) => {
         const formData = new FormData();
-formData.append('file', selectedFile); // selectedFile is the image file to be uploaded
-formData.append('upload_preset', 'ml_default'); // Use your Cloudinary preset name
+        formData.append('file', file); // The file object being uploaded
+        formData.append('upload_preset', 'hzr312jm'); // Use the new unsigned preset
 
         try {
-            const response = await fetch('https://api.cloudinary.com/v1_1/your_cloud_name/image/upload', {
+            const response = await fetch('https://api.cloudinary.com/v1_1/dtc81tvun/image/upload', {
                 method: 'POST',
                 body: formData,
             });
 
+            if (!response.ok) {
+                const errorMessage = await response.text();
+                console.error('Error uploading image:', errorMessage);
+                throw new Error('Image upload failed');
+            }
+
             const data = await response.json();
-            return data.secure_url; // Return the URL of the uploaded image
+            console.log('Uploaded image data:', data); // Log the response data
+            return data.secure_url; // Return the secure URL for the uploaded image
         } catch (error) {
             console.error('Image upload failed:', error);
-            return null; // Handle error as needed
+            return null; // Handle the error accordingly
         }
     };
 
@@ -80,6 +87,13 @@ formData.append('upload_preset', 'ml_default'); // Use your Cloudinary preset na
         setLoading(true);
 
         try {
+            // Check if an image is selected
+            if (!image) {
+                alert('Please select an image to upload.');
+                setLoading(false);
+                return;
+            }
+
             // Upload image to Cloudinary
             const imageUrl = await uploadImage(image);
             if (!imageUrl) {
