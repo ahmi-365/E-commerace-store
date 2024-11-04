@@ -17,9 +17,7 @@ import { Helmet } from "react-helmet";
 
 const ProductList = ({ addToCart, deleteProduct }) => {
   const [products, setProducts] = useState([]);
-  const [currentPage, setCurrentPage] = useState(
-    Number(localStorage.getItem("currentPage")) || 1
-  );
+  const [currentPage, setCurrentPage] = useState(Number(localStorage.getItem("currentPage")) || 1);
   const [totalPages, setTotalPages] = useState(1);
   const [filters, setFilters] = useState({
     category: "",
@@ -56,20 +54,14 @@ const ProductList = ({ addToCart, deleteProduct }) => {
 
   const handleAddToCart = (product) => {
     addToCart(product);
-    toast.success(`${product.name} added to cart!`, {
-      position: "top-center",
-      autoClose: 3000,
-    });
+    toast.success(`${product.name} added to cart!`, { position: "top-center", autoClose: 3000 });
   };
 
   const handleDeleteProduct = (productId) => {
     const confirmDelete = window.confirm("Are you sure you want to delete this product?");
     if (confirmDelete) {
       deleteProduct(productId);
-      toast.success("Product deleted!", {
-        position: "top-center",
-        autoClose: 3000,
-      });
+      toast.success("Product deleted!", { position: "top-center", autoClose: 3000 });
     }
   };
 
@@ -106,68 +98,24 @@ const ProductList = ({ addToCart, deleteProduct }) => {
         {/* Filter Box */}
         <Grid item xs={12} sm={4} md={3}>
           <Paper elevation={3} sx={{ padding: 2 }}>
-            <Typography variant="h6" sx={{ mb: 2 }}>
-              Filters
-            </Typography>
-            <TextField
-              label="Category"
-              name="category"
-              value={filters.category}
-              onChange={handleFilterChange}
-              fullWidth
-              sx={{ mb: 2 }}
-            />
-            <TextField
-              label="Name"
-              name="name"
-              value={filters.name}
-              onChange={handleFilterChange}
-              fullWidth
-              sx={{ mb: 2 }}
-            />
+            <Typography variant="h6" sx={{ mb: 2 }}>Filters</Typography>
+            <TextField label="Category" name="category" value={filters.category} onChange={handleFilterChange} fullWidth sx={{ mb: 2 }} />
+            <TextField label="Name" name="name" value={filters.name} onChange={handleFilterChange} fullWidth sx={{ mb: 2 }} />
             <Grid container spacing={2} sx={{ mb: 2 }}>
               <Grid item xs={6}>
-                <TextField
-                  label="Min Price"
-                  name="minPrice"
-                  type="number"
-                  value={filters.minPrice}
-                  onChange={handleFilterChange}
-                  fullWidth
-                />
+                <TextField label="Min Price" name="minPrice" type="number" value={filters.minPrice} onChange={handleFilterChange} fullWidth />
               </Grid>
               <Grid item xs={6}>
-                <TextField
-                  label="Max Price"
-                  name="maxPrice"
-                  type="number"
-                  value={filters.maxPrice}
-                  onChange={handleFilterChange}
-                  fullWidth
-                />
+                <TextField label="Max Price" name="maxPrice" type="number" value={filters.maxPrice} onChange={handleFilterChange} fullWidth />
               </Grid>
             </Grid>
-            <TextField
-              label="Brand"
-              name="brand"
-              value={filters.brand}
-              onChange={handleFilterChange}
-              fullWidth
-              sx={{ mb: 2 }}
-            />
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={applyFilters}
-              fullWidth
-            >
-              Apply Filters
-            </Button>
+            <TextField label="Brand" name="brand" value={filters.brand} onChange={handleFilterChange} fullWidth sx={{ mb: 2 }} />
+            <Button variant="contained" color="primary" onClick={applyFilters} fullWidth>Apply Filters</Button>
           </Paper>
         </Grid>
-        <Helmet>
-          <title>Product List - ECommerce</title> {/* Set the page title */}
-        </Helmet>
+
+        <Helmet><title>Product List - ECommerce</title></Helmet>
+
         {/* Product List */}
         <Grid item xs={12} sm={8} md={9}>
           <Grid container spacing={3}>
@@ -177,10 +125,9 @@ const ProductList = ({ addToCart, deleteProduct }) => {
                   <Card sx={{ maxWidth: "100%", boxShadow: "lg" }}>
                     <CardOverflow>
                       <AspectRatio sx={{ minWidth: 200 }}>
-                        {/* Fetch the product image from Cloudinary */}
                         {product.imageUrl ? (
                           <img
-                            src={`https://res.cloudinary.com/dtc81tvun/image/upload/v${product.imageUrl}`}
+                            src={product.imageUrl}
                             alt={product.name}
                             style={{ width: "100%", height: "auto" }}
                           />
@@ -190,27 +137,10 @@ const ProductList = ({ addToCart, deleteProduct }) => {
                       </AspectRatio>
                     </CardOverflow>
                     <CardContent>
-                      <Typography level="body-xs">
-                        {product.category}
-                      </Typography>
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "space-between",
-                        }}
-                      >
-                        <RouterLink
-                          to={`/product/${product._id}`}
-                          style={{
-                            color: "inherit",
-                            textDecoration: "none",
-                            flexGrow: 1,
-                          }}
-                        >
-                          <Typography level="body-lg" sx={{ fontWeight: "md" }}>
-                            {product.name}
-                          </Typography>
+                      <Typography level="body-xs">{product.category}</Typography>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                        <RouterLink to={`/product/${product._id}`} style={{ color: "inherit", textDecoration: "none", flexGrow: 1 }}>
+                          <Typography level="body-lg" sx={{ fontWeight: "md" }}>{product.name}</Typography>
                         </RouterLink>
                         <IconButton
                           onClick={() => handleDeleteProduct(product._id)}
@@ -218,74 +148,27 @@ const ProductList = ({ addToCart, deleteProduct }) => {
                             marginLeft: 1,
                             backgroundColor: "white",
                             borderRadius: "50%",
-                            border: "none",
-                            "&:hover": {
-                              backgroundColor: "#f44336",
-                              color: "white",
-                            },
+                            "&:hover": { backgroundColor: "#f44336", color: "white" },
                           }}
                           size="small"
                         >
                           <DeleteIcon fontSize="small" />
                         </IconButton>
                       </div>
-                      <Typography
-                        level="title-lg"
-                        sx={{ mt: 1, fontWeight: "xl" }}
-                        endDecorator={
-                          <Chip
-                            component="span"
-                            size="sm"
-                            variant="soft"
-                            color="success"
-                          >
-                            Available
-                          </Chip>
-                        }
-                      >
+                      <Typography level="title-lg" sx={{ mt: 1, fontWeight: "xl" }}>
                         ${product.price}
+                        <Chip component="span" size="sm" variant="soft" color="success">Available</Chip>
                       </Typography>
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                        }}
-                      >
-                        <Typography level="body-sm">
-                          (Only <b>{product.stock}</b> left in stock!)
-                        </Typography>
-                        <RouterLink
-                          to={`/product/${product._id}`}
-                          style={{
-                            textDecoration: "none",
-                            display: "flex",
-                            alignItems: "center",
-                          }}
-                        >
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <Typography level="body-sm">(Only <b>{product.stock}</b> left in stock!)</Typography>
+                        <RouterLink to={`/product/${product._id}`} style={{ textDecoration: "none", display: "flex", alignItems: "center" }}>
                           <Typography>Details</Typography>
                           <ArrowOutwardIcon sx={{ fontSize: 15, ml: 0.5 }} />
                         </RouterLink>
                       </div>
                     </CardContent>
-                    <CardOverflow
-                      sx={{
-                        bgcolor: "background.level1",
-                        display: "flex",
-                        justifyContent: "space-between",
-                        gap: 1,
-                        py: 1.5,
-                        px: "var(--Card-padding)",
-                      }}
-                    >
-                      <Button
-                        variant="solid"
-                        color="danger"
-                        size="lg"
-                        onClick={() => handleAddToCart(product)}
-                      >
-                        Add to cart
-                      </Button>
+                    <CardOverflow sx={{ bgcolor: "background.level1", display: "flex", justifyContent: "space-between", gap: 1, py: 1.5, px: "var(--Card-padding)" }}>
+                      <Button variant="solid" color="danger" size="lg" onClick={() => handleAddToCart(product)}>Add to cart</Button>
                     </CardOverflow>
                   </Card>
                 </Grid>
@@ -294,16 +177,7 @@ const ProductList = ({ addToCart, deleteProduct }) => {
               <Typography>No products found.</Typography>
             )}
           </Grid>
-          {/* Pagination */}
-          <Pagination
-            count={totalPages}
-            page={currentPage}
-            onChange={handlePageChange}
-            color="primary"
-            variant="outlined"
-            shape="rounded"
-            sx={{ mt: 3 }}
-          />
+          <Pagination count={totalPages} page={currentPage} onChange={handlePageChange} color="primary" variant="outlined" shape="rounded" sx={{ mt: 3 }} />
         </Grid>
       </Grid>
       <ToastContainer />

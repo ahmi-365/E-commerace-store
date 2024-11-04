@@ -11,7 +11,6 @@ import {
     CardActions,
     Box,
     Avatar,
-    IconButton,
     CircularProgress,
     styled,
 } from '@mui/material';
@@ -58,8 +57,8 @@ const ProductForm = ({ fetchProducts }) => {
     // Cloudinary upload function
     const uploadImage = async (file) => {
         const formData = new FormData();
-        formData.append('file', file); // The file object being uploaded
-        formData.append('upload_preset', 'hzr312jm'); // Use the new unsigned preset
+        formData.append('file', file);
+        formData.append('upload_preset', 'hzr312jm'); // Your unsigned preset for Cloudinary
 
         try {
             const response = await fetch('https://api.cloudinary.com/v1_1/dtc81tvun/image/upload', {
@@ -74,64 +73,61 @@ const ProductForm = ({ fetchProducts }) => {
             }
 
             const data = await response.json();
-            console.log('Uploaded image data:', data); // Log the response data
-            return data.secure_url; // Return the secure URL for the uploaded image
+            console.log('Uploaded image data:', data);
+            return data.secure_url;
         } catch (error) {
             console.error('Image upload failed:', error);
-            return null; // Handle the error accordingly
+            return null;
         }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-    
-        // Validate price
+
         if (parseFloat(price) <= 0) {
             alert('Price must be a positive number.');
             setLoading(false);
             return;
         }
-    
+
         try {
             if (!image) {
                 alert('Please select an image to upload.');
                 setLoading(false);
                 return;
             }
-    
+
             const imageUrl = await uploadImage(image);
             if (!imageUrl) {
                 alert('Image upload failed, please try again.');
                 setLoading(false);
                 return;
             }
-    
+
             const formData = {
                 name,
-                price: parseFloat(price).toFixed(2), // Ensure price is a number with two decimals
+                price: parseFloat(price).toFixed(2),
                 description,
                 sku,
                 brand,
                 category,
                 image: imageUrl,
             };
-    
-            // Log the payload for debugging
+
             console.log('Sending payload:', JSON.stringify(formData));
-    
-            const response = await fetch('https://m-store-server-ryl5.onrender.com/api/products', {
+
+            const response = await fetch('https://m-store-server-ryl5.onrender.com/api/products/add', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(formData),
             });
-    
+
             if (response.ok) {
                 const result = await response.json();
                 console.log('Product added successfully:', result);
-                // Reset form fields
                 setName('');
                 setPrice('');
                 setDescription('');
@@ -154,7 +150,6 @@ const ProductForm = ({ fetchProducts }) => {
             setLoading(false);
         }
     };
-    
 
     return (
         <Container>
@@ -259,7 +254,7 @@ const ProductForm = ({ fetchProducts }) => {
                 </Grid>
             </Grid>
             <Helmet>
-                <title>Add Product - ECommerace</title>
+                <title>Add Product - ECommerce</title>
             </Helmet>
         </Container>
     );
