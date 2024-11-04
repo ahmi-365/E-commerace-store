@@ -65,7 +65,7 @@ const OrderDetails = () => {
                             <div className="image-container">
                                 <Card.Img 
                                     variant="top" 
-                                    src={`https://m-store-server-ryl5.onrender.com/${item.imageUrl}`} 
+                                    src={item.imageUrl}
                                     alt={item.name}
                                     className="rounded-top"
                                 />

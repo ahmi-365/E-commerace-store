@@ -211,9 +211,8 @@ export default function PaymentMethods({
                         <Col lg="3" md="12" className="mb-4 mb-lg-0">
                           <div className="bg-image rounded hover-zoom hover-overlay">
                             <img
-                              src={`https://m-store-server-ryl5.onrender.com/${
-                                item.imageUrl || "default-image.jpg"
-                              }`}
+                                              src={item.imageUrl}
+
                               className="w-100 rounded"
                               alt={item.name}
                             />
