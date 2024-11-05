@@ -10,8 +10,8 @@ import { Helmet } from "react-helmet";
 const ProductDetails = ({ addToCart }) => {
   const { id } = useParams();
   const [productDetailItem, setProductDetailItem] = useState({
-    imageUrl: "", 
-    name: "", 
+    imageUrl: "",
+    name: "",
     brand: "",
     category: "",
     sku: "",
@@ -20,13 +20,14 @@ const ProductDetails = ({ addToCart }) => {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  // State for selected size, color, and quantity
+  
+  // State for selected size, color, quantity, and checkbox
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
-  const [quantity, setQuantity] = useState(1);  
+  const [quantity, setQuantity] = useState(1);
+  const [showOptions, setShowOptions] = useState(false); // State for checkbox
 
-  // Hardcoded size and professional color options
+  // Hardcoded size and color options
   const sizes = ["XS", "S", "M", "L", "XL"];
   const colors = ["#add8e6", "#d3d3d3", "#90ee90", "#e6e6fa", "#ffdab9", "#ffffe0"]; // Professional colors
 
@@ -60,13 +61,9 @@ const ProductDetails = ({ addToCart }) => {
     return <div className="text-danger text-center">{error}</div>;
   }
 
-  const productImage = productDetailItem.imageUrl 
-    ? `https://m-store-server-ryl5.onrender.com/${productDetailItem.imageUrl}`
-    : null;
-
   // Function to handle adding the product to the cart
   const handleAddToCart = () => {
-    if (!selectedSize || !selectedColor) {
+    if (showOptions && (!selectedSize || !selectedColor)) {
       toast.error("Please select both size and color before adding to cart.");
       return;
     }
@@ -88,11 +85,11 @@ const ProductDetails = ({ addToCart }) => {
       <div className="row">
         {/* Product Image */}
         <div className="col-md-6 mb-4">
-          {productImage ? (
-            <img 
-              src={productImage} 
+          {productDetailItem.imageUrl ? (
+            <img
+              src={productDetailItem.imageUrl}
               alt={productDetailItem.name}
-              className="img-fluid rounded shadow" 
+              className="img-fluid rounded shadow"
               style={{ border: '2px solid #f0f0f0', maxHeight: '400px', objectFit: 'cover' }}
             />
           ) : (
@@ -118,50 +115,68 @@ const ProductDetails = ({ addToCart }) => {
             </p>
             <p className="pt-5 text-muted mb-4">{productDetailItem.description}</p>
 
-            {/* Size Selection */}
+            {/* Checkbox for showing size and color options */}
             <div className="mb-4">
-              <p className="pb-2 text-bold">Size</p>
-              <div className="d-flex gap-2">
-                {sizes.map((size, index) => (
-                  <div
-                    key={index}
-                    className={`size-option d-flex align-items-center justify-content-center border cursor-pointer ${selectedSize === size ? 'border-primary' : ''}`}
-                    style={{ width: '40px', height: '40px', borderRadius: '5px', cursor: 'pointer' }}
-                    onClick={() => setSelectedSize(size)}
-                  >
-                    {size}
-                  </div>
-                ))}
-              </div>
+              <input
+                type="checkbox"
+                checked={showOptions}
+                onChange={() => setShowOptions(!showOptions)}
+                id="optionsToggle"
+              />
+              <label htmlFor="optionsToggle" className="ms-2">
+                Show size and color options
+              </label>
             </div>
 
-            {/* Color Selection */}
-            <div className="mb-4">
-              <p className="pb-2 text-bold">Color</p>
-              <div className="d-flex gap-2">
-                {colors.map((color, index) => (
-                  <div
-                    key={index}
-                    className={`color-option border cursor-pointer rounded ${selectedColor === color ? 'border-dark' : ''}`}
-                    style={{
-                      backgroundColor: color,
-                      width: '40px', 
-                      height: '40px',
-                      border: '4px solid black',
-                      cursor: 'pointer',
-                      transition: 'transform 0.2s', // Hover effect
-                    }}
-                    onClick={() => setSelectedColor(color)}
-                    onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.1)'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
-                  />
-                ))}
-              </div>
-            </div>
+            {/* Conditionally render Size and Color Selection based on checkbox */}
+            {showOptions && (
+              <>
+                {/* Size Selection */}
+                <div className="mb-4">
+                  <p className="pb-2 text-bold">Size</p>
+                  <div className="d-flex gap-2">
+                    {sizes.map((size, index) => (
+                      <div
+                        key={index}
+                        className={`size-option d-flex align-items-center justify-content-center border cursor-pointer ${selectedSize === size ? 'border-primary' : ''}`}
+                        style={{ width: '40px', height: '40px', borderRadius: '5px', cursor: 'pointer' }}
+                        onClick={() => setSelectedSize(size)}
+                      >
+                        {size}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Color Selection */}
+                <div className="mb-4">
+                  <p className="pb-2 text-bold">Color</p>
+                  <div className="d-flex gap-2">
+                    {colors.map((color, index) => (
+                      <div
+                        key={index}
+                        className={`color-option border cursor-pointer rounded ${selectedColor === color ? 'border-dark' : ''}`}
+                        style={{
+                          backgroundColor: color,
+                          width: '40px',
+                          height: '40px',
+                          border: '4px solid black',
+                          cursor: 'pointer',
+                          transition: 'transform 0.2s', // Hover effect
+                        }}
+                        onClick={() => setSelectedColor(color)}
+                        onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.1)'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
 
             {/* Add to Cart and Wishlist Buttons */}
             <div className="mt-4 d-flex gap-3">
-              <button 
+              <button
                 className="btn btn-primary w-50 d-flex align-items-center justify-content-center shadow"
                 onClick={handleAddToCart}
               >
@@ -179,7 +194,7 @@ const ProductDetails = ({ addToCart }) => {
 
       {/* Toast container for showing notifications */}
       <Helmet>
-        <title>Product Details -ECommerace</title> {/* Set the page title */}
+        <title>Product Details - ECommerce</title> {/* Set the page title */}
       </Helmet>
       <ToastContainer position="top-center" />
     </section>
