@@ -21,6 +21,7 @@ import Coupon from "./Coupen";
 import ApplyCoupen from "./ApplyCoupen";
 import CoupenHistory from "./CoupenHistory";
 import LoadingSpinner from "./LoadingSpinner";
+import PaymentDetails from "./PaymentDetails";
 
 const App = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -165,9 +166,10 @@ const App = () => {
             <Route path="/signup" element={<SignUp />} />
             <Route path="/coupen" element={<Coupon />} />
             <Route path="/coupenhistory" element={<CoupenHistory />} />
-
             <Route path="/applycoupen" element={<ApplyCoupen />} />
             <Route path="/login" element={<Login handleLogin={handleLogin} />} />
+            <Route path="/paymentdetails/:id" component={PaymentDetails} /> {/* Add this route */}
+
           </Routes>
         )}
       </div>

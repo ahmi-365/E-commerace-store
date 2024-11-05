@@ -2,10 +2,13 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import { Link } from "react-router-dom";
-import { FaArrowRight, FaTrash } from "react-icons/fa";
+import { FaTrash } from "react-icons/fa";
 import 'react-toastify/dist/ReactToastify.css';
-import { Card, Button, Row, Col } from "react-bootstrap";
 import { Helmet } from "react-helmet";
+import Typography from "@mui/joy/Typography";
+import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
+
+import './OrderHistory.css'; // Create a CSS file for custom styling
 
 const OrderHistory = () => {
   const [orders, setOrders] = useState([]);
@@ -54,51 +57,64 @@ const OrderHistory = () => {
       {loading ? (
         <p>Loading...</p>
       ) : (
-        <Row xs={1} sm={2} md={3} className="g-4">
-          {orders.length === 0 ? (
-            <p>No orders found.</p>
-          ) : (
-            orders.map((order) => (
-              <Col key={order._id}>
-                <Card className="position-relative">
-                  <FaTrash
-                    className="position-absolute top-0 end-0 m-2 text-danger"
-                    style={{ cursor: "pointer", fontSize: "1.2rem" }}
-                    onClick={() => removeOrder(order._id)}
-                  />
-                  <Card.Body>
-                    <Card.Title>Order ID: {order.orderId || "N/A"}</Card.Title>
-                    <Card.Subtitle className="mb-2 text-muted">{order.userEmail || "No email available"}</Card.Subtitle>
-                    <Card.Text>
-                      <strong>Total Product Price:</strong> ${order.totalProductPrice ? order.totalProductPrice.toFixed(2) : "0.00"}
-                      <br />
-                      <strong>Discount:</strong> {order.discountPercentage || "0"}%
-                      <br />
-                      <strong>Shipping Cost:</strong> ${order.shippingCost ? order.shippingCost.toFixed(2) : "0.00"}
-                      <br />
-                      <strong>Total Amount:</strong> ${order.totalAmount ? order.totalAmount.toFixed(2) : "0.00"}
-                      <br />
-                      <strong>Coupon Code:</strong> {order.couponCode || "No coupon used"}
-                      <br />
-                      <strong>Payment:</strong>
-                      <span className={`ms-2 ${order.status === "Completed" ? "text-success fw-bold" : ""}`}>
-                        {order.status || "Pending"}
-                      </span>
-                    </Card.Text>
-                    <div className="d-flex justify-content-end">
-                      <Link to={`/orderdetails/${order._id}`} className="btn btn-primary">
-                        Details <FaArrowRight className="ms-1" />
-                      </Link>
-                    </div>
-                  </Card.Body>
-                </Card>
-              </Col>
-            ))
-          )}
-        </Row>
+        <table className="table table-striped">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Email</th>
+              <th>Total Product Price</th>
+              <th>Discount</th>
+              <th>Shipping Cost</th>
+              <th>Total Amount</th>
+              <th>Coupon Code</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {orders.length === 0 ? (
+              <tr>
+                <td colSpan="9" className="text-center">No orders found.</td>
+              </tr>
+            ) : (
+              orders.map((order) => (
+                <tr key={order._id}>
+                  <td>{order.orderId || "N/A"}</td>
+                  <td>{order.userEmail || "No email available"}</td>
+                  <td>${order.totalProductPrice ? order.totalProductPrice.toFixed(2) : "0.00"}</td>
+                  <td>{order.discountPercentage || "0"}%</td>
+                  <td>${order.shippingCost ? order.shippingCost.toFixed(2) : "0.00"}</td>
+                  <td>${order.totalAmount ? order.totalAmount.toFixed(2) : "0.00"}</td>
+                  <td>{order.couponCode || "No coupon used"}</td>
+                  <td style={{ color: order.status === "Paid" ? "green" : "red" }}>
+  {order.status === "Paid" ? (
+    <strong>{order.status}</strong> // Bold for Paid status
+  ) : (
+    order.status || "Pending" // Regular text for Pending status
+  )}
+  {order.status === "Paid" && (
+    <Link to={`/paymentdetails/${order._id}`} style={{ textDecoration: 'none', marginLeft: '10px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', color: 'inherit' }}>
+        <Typography varient>Details</Typography>
+        <ArrowOutwardIcon sx={{ fontSize: 15, ml: 0.5 }} />
+      </div>
+    </Link>
+  )}
+</td>
+
+                  <td>
+                    <Link to={`/orderdetails/${order._id}`} className="btn btn-primary btn-sm me-2">Details</Link>
+                    
+                                           
+                                                             </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
       )}
       <Helmet>
-        <title>Order History -ECommerace</title> {/* Set the page title */}
+        <title>Order History - ECommerace</title>
       </Helmet>
       <ToastContainer />
     </div>
