@@ -82,7 +82,7 @@ const OrderDetails = () => {
                                     <strong>Color:</strong> 
                                     <span 
                                         style={{ 
-                                            backgroundColor: item.selectedColor || '#ccc', 
+                                            backgroundColor: item.selectedColor || 'N/A', 
                                             display: 'inline-block',
                                             width: '20px',
                                             height: '20px',

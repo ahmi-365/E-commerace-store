@@ -168,7 +168,7 @@ const App = () => {
             <Route path="/coupenhistory" element={<CoupenHistory />} />
             <Route path="/applycoupen" element={<ApplyCoupen />} />
             <Route path="/login" element={<Login handleLogin={handleLogin} />} />
-            <Route path="/paymentdetails/:id" component={PaymentDetails} /> {/* Add this route */}
+            <Route path="/paymentdetails/:id" element={<PaymentDetails />} /> {/* Use element prop */}
 
           </Routes>
         )}
