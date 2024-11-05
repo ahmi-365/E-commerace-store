@@ -80,7 +80,7 @@ const OrderHistory = () => {
                       <br />
                       <strong>Coupon Code:</strong> {order.couponCode || "No coupon used"}
                       <br />
-                      <strong>Status:</strong>
+                      <strong>Payment:</strong>
                       <span className={`ms-2 ${order.status === "Completed" ? "text-success fw-bold" : ""}`}>
                         {order.status || "Pending"}
                       </span>
