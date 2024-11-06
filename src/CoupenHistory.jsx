@@ -31,17 +31,11 @@ const CouponHistory = () => {
     return usageCount >= usageLimit;
   };
 
-  const adjustDate = (date) => {
-    const adjustedDate = new Date(date);
-    adjustedDate.setDate(adjustedDate.getDate() + 1); // Adding one day to the expiry date
-    return adjustedDate;
-  };
-
   return (
     <Container className="coupon-history-container mt-5">
       <h2 className="text-center mb-4">Coupon History</h2>
       <Helmet>
-        <title>Coupen History -ECommerace</title> {/* Set the page title */}
+        <title>Coupon History - ECommerce</title>
       </Helmet>
       {error && <Alert variant="danger" className="alert-custom">{error}</Alert>}
       {coupons.length > 0 ? (
@@ -64,7 +58,7 @@ const CouponHistory = () => {
                 <td>{coupon.discountPercentage}%</td>
                 <td>{coupon.usageCount}</td>
                 <td>{coupon.usageLimit}</td>
-                <td>{adjustDate(coupon.expiryDate).toLocaleDateString()}</td> {/* Adjusted date */}
+                <td>{new Date(coupon.expiryDate).toLocaleDateString()}</td> {/* Adjusted date without manual modification */}
                 <td>
                   <span className={isExpired(coupon.expiryDate) ? 'text-danger' : 'text-success'}>
                     {isExpired(coupon.expiryDate) ? 'Expired' : 'Valid'}
