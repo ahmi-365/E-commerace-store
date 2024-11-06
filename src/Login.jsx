@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Helmet } from 'react-helmet'; // Import Helmet
+import { Helmet } from 'react-helmet';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Link, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -34,9 +34,15 @@ const Login = ({ handleLogin }) => {
 
       const userData = await response.json();
       localStorage.setItem('user', JSON.stringify(userData));
-      handleLogin(userData.token, userData.email, userData.userId);
 
-      navigate('/');
+      // Check if user is an admin and navigate accordingly
+      if (userData.isAdmin) {
+        navigate('/admin-dashboard');
+      } else {
+        navigate('/');
+      }
+
+      handleLogin(userData.token, userData.email, userData.userId);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -47,7 +53,7 @@ const Login = ({ handleLogin }) => {
   return (
     <div className="container d-flex justify-content-center align-items-center min-vh-100">
       <Helmet>
-        <title>Login -ECommerace</title> {/* Set the page title */}
+        <title>Login - ECommerce</title>
       </Helmet>
       <div className="card shadow-lg p-4 rounded" style={{ width: '100%', maxWidth: '400px' }}>
         <h2 className="text-center mb-4">Login</h2>
