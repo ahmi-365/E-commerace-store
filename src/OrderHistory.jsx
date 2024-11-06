@@ -3,7 +3,7 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet";
-import { Typography, Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
+import { Typography, Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle, Card, CardContent, Grid, useMediaQuery } from "@mui/material";
 import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
 import "./OrderHistory.css";
 import "react-toastify/dist/ReactToastify.css";
@@ -14,14 +14,13 @@ const OrderHistory = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [startIdx, setStartIdx] = useState("");
   const [endIdx, setEndIdx] = useState("");
+  const isMobile = useMediaQuery("(max-width:600px)");
 
   useEffect(() => {
     const fetchOrders = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(
-          "https://m-store-server-ryl5.onrender.com/api/orders"
-        );
+        const response = await axios.get("https://m-store-server-ryl5.onrender.com/api/orders");
         setOrders(response.data);
       } catch (error) {
         console.error("Error fetching orders:", error);
@@ -34,15 +33,11 @@ const OrderHistory = () => {
   }, []);
 
   const removeOrder = async (orderId) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to remove this order?"
-    );
+    const confirmDelete = window.confirm("Are you sure you want to remove this order?");
     if (!confirmDelete) return;
 
     try {
-      const response = await axios.delete(
-        `https://m-store-server-ryl5.onrender.com/api/orders/${orderId}`
-      );
+      const response = await axios.delete(`https://m-store-server-ryl5.onrender.com/api/orders/${orderId}`);
       if (response.status === 200 || response.status === 204) {
         setOrders(orders.filter((order) => order._id !== orderId));
         toast.success("Order removed successfully.");
@@ -67,20 +62,12 @@ const OrderHistory = () => {
     const start = parseInt(startIdx, 10) - 1;
     const end = parseInt(endIdx, 10) - 1;
 
-    if (
-      isNaN(start) || 
-      isNaN(end) || 
-      start < 0 || 
-      end >= orders.length || 
-      start > end
-    ) {
+    if (isNaN(start) || isNaN(end) || start < 0 || end >= orders.length || start > end) {
       toast.error("Please enter a valid index range.");
       return;
     }
 
-    const headers = [
-      "Order ID,Email,Total Product Price,Discount,Shipping Cost,Total Amount,Coupon Code,Status",
-    ];
+    const headers = ["Order ID,Email,Total Product Price,Discount,Shipping Cost,Total Amount,Coupon Code,Status"];
     const rows = orders.slice(start, end + 1).map((order) =>
       [
         order.orderId || "N/A",
@@ -155,7 +142,75 @@ const OrderHistory = () => {
 
       {loading ? (
         <p>Loading...</p>
+      ) : isMobile ? (
+        // Card layout for mobile
+        <Grid container spacing={2}>
+          {orders.map((order, index) => (
+            <Grid item xs={12} key={order._id}>
+              <Card variant="outlined" className="order-card">
+                <CardContent>
+                  <Typography variant="h6" component="h2" gutterBottom>
+                    Order {index + 1}
+                  </Typography>
+                  <div className="order-info">
+                    <Typography variant="body2">Order ID:</Typography>
+                    <Typography variant="body1">{order.orderId || "N/A"}</Typography>
+                  </div>
+                  <div className="order-info">
+                    <Typography variant="body2">Email:</Typography>
+                    <Typography variant="body1">{order.userEmail || "N/A"}</Typography>
+                  </div>
+                  <div className="order-info">
+                    <Typography variant="body2">Total Product Price:</Typography>
+                    <Typography variant="body1">${order.totalProductPrice ? order.totalProductPrice.toFixed(2) : "0.00"}</Typography>
+                  </div>
+                  <div className="order-info">
+                    <Typography variant="body2">Discount:</Typography>
+                    <Typography variant="body1">{order.discountPercentage || "0"}%</Typography>
+                  </div>
+                  <div className="order-info">
+                    <Typography variant="body2">Shipping Cost:</Typography>
+                    <Typography variant="body1">${order.shippingCost ? order.shippingCost.toFixed(2) : "0.00"}</Typography>
+                  </div>
+                  <div className="order-info">
+                    <Typography variant="body2">Total Amount:</Typography>
+                    <Typography variant="body1">${order.totalAmount ? order.totalAmount.toFixed(2) : "0.00"}</Typography>
+                  </div>
+                  <div className="order-info">
+                    <Typography variant="body2">Coupon Code:</Typography>
+                    <Typography variant="body1">{order.couponCode || "No coupon used"}</Typography>
+                  </div>
+                  <div className="order-info">
+                    <Typography variant="body2">Status:</Typography>
+                    <Typography variant="body1" style={{ color: order.status === "Paid" ? "green" : "red" }}>
+                      {order.status || "Pending"}
+                    </Typography>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <Link to={`/orderdetails/${order._id}`}>
+                      <Button variant="contained" color="primary" size="small" className="me-2">
+                        Details
+                      </Button>
+                    </Link>
+                    {order.status === "Paid" && (
+                      <Link to={`/paymentdetails/${order._id}`} style={{ textDecoration: "none", marginLeft: "10px" }}>
+                        <div style={{ display: "flex", alignItems: "center", color: "inherit" }}>
+                          <Typography variant="body2">Payment Details</Typography>
+                          <ArrowOutwardIcon sx={{ fontSize: 15, ml: 0.5 }} />
+                        </div>
+                      </Link>
+                    )}
+                    <span onClick={() => removeOrder(order._id)} style={{ color: "gray", cursor: "pointer", fontSize: "20px" }}>
+                      x
+                    </span>
+                  </div>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
       ) : (
+        // Table layout for desktop
         <table className="table table-striped">
           <thead>
             <tr>
@@ -169,44 +224,32 @@ const OrderHistory = () => {
               <th>Coupon Code</th>
               <th>Status</th>
               <th>Actions</th>
+              <th>Delete</th>
             </tr>
           </thead>
           <tbody>
             {orders.length === 0 ? (
               <tr>
-                <td colSpan="10" className="text-center">
+                <td colSpan="11" className="text-center">
                   No orders found.
                 </td>
               </tr>
             ) : (
               orders.map((order, index) => (
                 <tr key={order._id}>
-                  <td>{index + 1}</td> {/* Displaying the index starting from 1 */}
+                  <td>{index + 1}</td>
                   <td>{order.orderId || "N/A"}</td>
                   <td>{order.userEmail || "No email available"}</td>
-                  <td>
-                    ${order.totalProductPrice ? order.totalProductPrice.toFixed(2) : "0.00"}
-                  </td>
+                  <td>${order.totalProductPrice ? order.totalProductPrice.toFixed(2) : "0.00"}</td>
                   <td>{order.discountPercentage || "0"}%</td>
-                  <td>
-                    ${order.shippingCost ? order.shippingCost.toFixed(2) : "0.00"}
-                  </td>
-                  <td>
-                    ${order.totalAmount ? order.totalAmount.toFixed(2) : "0.00"}
-                  </td>
+                  <td>${order.shippingCost ? order.shippingCost.toFixed(2) : "0.00"}</td>
+                  <td>${order.totalAmount ? order.totalAmount.toFixed(2) : "0.00"}</td>
                   <td>{order.couponCode || "No coupon used"}</td>
-                  <td
-                    style={{ color: order.status === "Paid" ? "green" : "red" }}
-                  >
+                  <td style={{ color: order.status === "Paid" ? "green" : "red" }}>
                     {order.status || "Pending"}
                     {order.status === "Paid" && (
-                      <Link
-                        to={`/paymentdetails/${order._id}`}
-                        style={{ textDecoration: "none", marginLeft: "10px" }}
-                      >
-                        <div
-                          style={{ display: "flex", alignItems: "center", color: "inherit" }}
-                        >
+                      <Link to={`/paymentdetails/${order._id}`} style={{ textDecoration: "none", marginLeft: "10px" }}>
+                        <div style={{ display: "flex", alignItems: "center", color: "inherit" }}>
                           <Typography variant="body2">Details</Typography>
                           <ArrowOutwardIcon sx={{ fontSize: 15, ml: 0.5 }} />
                         </div>
@@ -219,10 +262,7 @@ const OrderHistory = () => {
                     </Link>
                   </td>
                   <td style={{ textAlign: "center" }}>
-                    <span
-                      onClick={() => removeOrder(order._id)}
-                      style={{ color: "gray", cursor: "pointer", fontSize: "20px" }}
-                    >
+                    <span onClick={() => removeOrder(order._id)} style={{ color: "gray", cursor: "pointer", fontSize: "20px" }}>
                       x
                     </span>
                   </td>
