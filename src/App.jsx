@@ -22,6 +22,7 @@ import ApplyCoupen from "./ApplyCoupen";
 import CoupenHistory from "./CoupenHistory";
 import LoadingSpinner from "./LoadingSpinner";
 import PaymentDetails from "./PaymentDetails";
+import AdminDash from "./AdminDash";
 
 const App = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -33,6 +34,8 @@ const App = () => {
   const [userEmail, setUserEmail] = useState("");
   const [userId, setUserId] = useState(null);
   const navigate = useNavigate();
+  const [isAdmin, setIsAdmin] = useState(false);
+
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -47,7 +50,18 @@ const App = () => {
       setLoading(false);
     }
   };
-
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (user && user.isLoggedIn) {
+      setIsLoggedIn(true);
+      setUserEmail(user.email);
+      setUserId(user.id);
+  
+      // Check if the email matches admin's email and update `isAdmin` state
+      setIsAdmin(user.email === 'admin@gmail.com'); // Set to true if the user is admin
+    }
+  }, []); // Empty dependency array to run once on component mount
+  
   useEffect(() => {
     fetchProducts();
     const user = JSON.parse(localStorage.getItem("user"));
@@ -106,13 +120,16 @@ const App = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('user'); // Clear user data
+    localStorage.removeItem('user'); // Clear user data from localStorage
     setIsLoggedIn(false);
     setUserEmail("");
     setUserId(null);
+    setIsAdmin(false); // Reset admin state
     resetCart();
-    toast.success("Logged out successfully."); // Trigger toast
+    toast.success("Logged out successfully.");
   };
+  
+  
 
   const handleLogin = (token, email, id) => {
     const user = { isLoggedIn: true, token, email, id };
@@ -142,6 +159,8 @@ const App = () => {
         isLoggedIn={isLoggedIn}
         userEmail={userEmail}
         handleLogout={handleLogout}
+        isAdmin={isAdmin} // Pass isAdmin as a prop
+
         handleCartClick={handleCartClick}
       />
       {/* <ToastContainer position="top-center" autoClose={3000} hideProgressBar={false} closeOnClick draggable pauseOnHover theme="light" /> */}
@@ -167,6 +186,7 @@ const App = () => {
             <Route path="/coupen" element={<Coupon />} />
             <Route path="/coupenhistory" element={<CoupenHistory />} />
             <Route path="/applycoupen" element={<ApplyCoupen />} />
+            <Route path="/admindash" element={<AdminDash />} />
             <Route path="/login" element={<Login handleLogin={handleLogin} />} />
             <Route path="/paymentdetails/:id" element={<PaymentDetails />} /> {/* Use element prop */}
 

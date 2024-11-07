@@ -1,13 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Navbar, Nav, Container } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faShoppingCart, faHistory, faUser, faSignOutAlt, faTags } from '@fortawesome/free-solid-svg-icons';
+import { faShoppingCart, faHistory, faUser, faSignOutAlt, faTags, faTachometerAlt } from '@fortawesome/free-solid-svg-icons';  // Importing the dashboard icon
 import './Navbar.css';
 
 const AppNavbar = ({ cartCount, isLoggedIn, userEmail, handleLogout, handleCartClick }) => {
   const [expanded, setExpanded] = useState(false); // State to control navbar expansion
+  const [isAdmin, setIsAdmin] = useState(false); // Track admin status
   const location = useLocation(); // Get the current location
+
+  useEffect(() => {
+    const userData = JSON.parse(localStorage.getItem('user'));
+    if (userData && userData.email === 'admin@gmail.com') {
+      setIsAdmin(true);  // Set admin status if the email matches
+    } else {
+      setIsAdmin(false);  // Set admin status to false for regular users
+    }
+  }, [isLoggedIn]); // Re-run the effect when login status changes
 
   // Function to handle link click and close navbar
   const handleLinkClick = () => setExpanded(false);
@@ -38,6 +48,12 @@ const AppNavbar = ({ cartCount, isLoggedIn, userEmail, handleLogout, handleCartC
             </Nav.Link>
             {isLoggedIn ? (
               <>
+                {isAdmin && (
+                  <Nav.Link as={Link} to="/admindash" className="d-flex align-items-center ms-3" onClick={handleLinkClick}>
+                    <FontAwesomeIcon icon={faTachometerAlt} className="me-1" />  {/* Admin dashboard icon */}
+                    <span>Admin Dashboard</span>
+                  </Nav.Link>
+                )}
                 <Nav.Link className="d-flex align-items-center" onClick={handleLinkClick}>
                   <Link to="/account">
                     <FontAwesomeIcon icon={faUser} className="me-1" />
