@@ -7,16 +7,18 @@ const AdminDash = () => {
   const [showModal, setShowModal] = useState(false);
   const [newSubAdmin, setNewSubAdmin] = useState({ email: '', role: '', password: '', confirmPassword: '' });
   const [error, setError] = useState('');
-  const [roles, setRoles] = useState(['Products Admin', 'Order Admin', 'Coupon Admin']); // Example roles
+  const [successMessage, setSuccessMessage] = useState('');
+  const [roles, setRoles] = useState(['Products Admin', 'Order Admin', 'Coupon Admin']);
 
   useEffect(() => {
     // Fetch sub-admins from the backend
     const fetchSubAdmins = async () => {
       try {
-        const response = await axios.get('https://m-store-server-ryl5.onrender.com/api/admin/subadmins');
+        const response = await axios.get('https://m-store-server-ryl5.onrender.com/api/admin/subadmins', { withCredentials: true });
         setSubAdmins(response.data);
       } catch (error) {
         console.error("Error fetching sub-admins:", error);
+        setError("Failed to load sub-admins. Please try again.");
       }
     };
 
@@ -24,46 +26,50 @@ const AdminDash = () => {
   }, []);
 
   const handleCreateSubAdmin = async () => {
-   if (newSubAdmin.password !== newSubAdmin.confirmPassword) {
-     setError("Passwords do not match");
-     return;
-   }
- 
-   try {
-     const token = localStorage.getItem('token');  // Assuming token is stored in localStorage
-     const response = await axios.post('https://m-store-server-ryl5.onrender.com/api/admin/subadmins', {
-       email: newSubAdmin.email,
-       role: newSubAdmin.role,
-       password: newSubAdmin.password,
-     }, {
-       headers: {
-         Authorization: `Bearer ${token}`,  // Add token in the Authorization header
-       },
-     });
-     setSubAdmins([...subAdmins, response.data]);
-     setShowModal(false);
-     setNewSubAdmin({ email: '', role: '', password: '', confirmPassword: '' });
-     setError('');
-   } catch (error) {
-     console.error("Error creating sub-admin:", error);
-     setError("Failed to create sub-admin. Please try again.");
-   }
- };
- 
- 
+    if (newSubAdmin.password !== newSubAdmin.confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    try {
+      const response = await axios.post('https://m-store-server-ryl5.onrender.com/api/admin/subadmins', {
+        email: newSubAdmin.email,
+        role: newSubAdmin.role,
+        password: newSubAdmin.password,
+      }, {
+        withCredentials: true, // send the session cookie with the request
+      });
+
+      setSubAdmins([...subAdmins, response.data]);
+      setShowModal(false);
+      setNewSubAdmin({ email: '', role: '', password: '', confirmPassword: '' });
+      setError('');
+      setSuccessMessage("Sub-admin created successfully!");
+    } catch (error) {
+      console.error("Error creating sub-admin:", error);
+      setError("Failed to create sub-admin. Please try again.");
+    }
+  };
 
   const handleDeleteSubAdmin = async (id) => {
     try {
-      await axios.delete(`https://m-store-server-ryl5.onrender.com/api/admin/subadmins/${id}`);
+      await axios.delete(`https://m-store-server-ryl5.onrender.com/api/admin/subadmins/${id}`, {
+        withCredentials: true, // send the session cookie with the request
+      });
       setSubAdmins(subAdmins.filter(admin => admin.id !== id));
+      setSuccessMessage("Sub-admin deleted successfully!");
     } catch (error) {
       console.error("Error deleting sub-admin:", error);
+      setError("Failed to delete sub-admin. Please try again.");
     }
   };
 
   return (
     <div className="container">
       <h1>Admin Dashboard</h1>
+      {successMessage && <p className="text-success">{successMessage}</p>}
+      {error && <p className="text-danger">{error}</p>}
+      
       <Button variant="primary" onClick={() => setShowModal(true)}>
         Create Sub-Admin
       </Button>
@@ -137,8 +143,6 @@ const AdminDash = () => {
                 ))}
               </Form.Control>
             </Form.Group>
-
-            {error && <p className="text-danger mt-2">{error}</p>}
           </Form>
         </Modal.Body>
         <Modal.Footer>
