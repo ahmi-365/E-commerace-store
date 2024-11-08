@@ -6,7 +6,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://m-store-server-ryl5.onrender.com', // Correct backend URL
+        target: 'https://m-store-server-ryl5.onrender.com', // Backend URL
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/api/, '')

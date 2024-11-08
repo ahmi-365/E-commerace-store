@@ -25,7 +25,7 @@ const Login = ({ handleLogin }) => {
         const userData = { email, isAdmin: true, userId: 'admin-id' };
         localStorage.setItem('user', JSON.stringify(userData));
         handleLogin(userData.userId, userData.email, userData.isAdmin);
-        navigate('/admindash');
+        navigate('/');
         return;
       } 
 

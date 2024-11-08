@@ -10,7 +10,7 @@ const AdminDash = () => {
   const [newSubAdmin, setNewSubAdmin] = useState({ email: '', role: '', password: '', confirmPassword: '' });
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const [roles, setRoles] = useState(['Products Admin', 'Order Admin', 'Coupon Admin']);
+  const [roles, setRoles] = useState(['Admin', 'Product Admin']);  // Adjusted to reflect actual roles
 
   useEffect(() => {
     const fetchSubAdmins = async () => {
@@ -18,7 +18,7 @@ const AdminDash = () => {
         const token = localStorage.getItem('token'); // Retrieve the token from localStorage
         const response = await axios.get('https://m-store-server-ryl5.onrender.com/api/admin/subadmins', {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`, // Ensure this header is set
           },
           withCredentials: true,
         });
@@ -29,8 +29,8 @@ const AdminDash = () => {
       }
     };
     fetchSubAdmins();
-  }, []);
-
+  }, []); // This effect only runs once when the component mounts
+  
   const handleCreateOrUpdateSubAdmin = async () => {
     if (newSubAdmin.password !== newSubAdmin.confirmPassword) {
       setError("Passwords do not match");
@@ -52,9 +52,11 @@ const AdminDash = () => {
           withCredentials: true,
         });
 
-        setSubAdmins(subAdmins.map(admin => 
+        // Update sub-admin in state without re-fetching
+        setSubAdmins(subAdmins.map(admin =>
           admin._id === currentAdminId ? { ...admin, email: newSubAdmin.email, role: newSubAdmin.role } : admin
         ));
+
         setSuccessMessage("Sub-admin updated successfully!");
       } else {
         // Create new sub-admin
@@ -69,15 +71,20 @@ const AdminDash = () => {
           withCredentials: true,
         });
 
+        // Add newly created sub-admin to state
         setSubAdmins([...subAdmins, response.data]);
         setSuccessMessage("Sub-admin created successfully!");
       }
 
+      // Reset form and modal
       setShowModal(false);
       setNewSubAdmin({ email: '', role: '', password: '', confirmPassword: '' });
       setError('');
       setIsUpdating(false);
       setCurrentAdminId(null);
+
+      // Clear success message after 3 seconds
+      setTimeout(() => setSuccessMessage(''), 3000);
     } catch (error) {
       console.error("Error creating/updating sub-admin:", error);
       setError("Failed to create/update sub-admin. Please try again.");
@@ -95,6 +102,7 @@ const AdminDash = () => {
       });
       setSubAdmins(subAdmins.filter(admin => admin._id !== id));
       setSuccessMessage("Sub-admin deleted successfully!");
+      setTimeout(() => setSuccessMessage(''), 3000);  // Clear success message after 3 seconds
     } catch (error) {
       console.error("Error deleting sub-admin:", error);
       setError("Failed to delete sub-admin. Please try again.");
@@ -107,13 +115,28 @@ const AdminDash = () => {
     setIsUpdating(true);
     setShowModal(true);
   };
-
+  const handleLogin = async () => {
+    try {
+      const response = await axios.post('/api/auth/login', { email, password });
+      const { token, role } = response.data;
+  
+      // Store the user details in localStorage
+      localStorage.setItem('user', JSON.stringify({ isLoggedIn: true, token, role }));
+  
+      // Redirect to the admin dashboard or appropriate page
+      navigate('/admin-dashboard');
+    } catch (error) {
+      console.error('Login error:', error);
+    }
+  };
+  
   return (
     <div className="container">
       <h1>Admin Dashboard</h1>
+
       {successMessage && <p className="text-success">{successMessage}</p>}
       {error && <p className="text-danger">{error}</p>}
-      
+
       <Button variant="primary" onClick={() => { setShowModal(true); setIsUpdating(false); }}>
         Create Sub-Admin
       </Button>
