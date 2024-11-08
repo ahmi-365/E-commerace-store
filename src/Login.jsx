@@ -4,6 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Link, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import axios from 'axios';
 
 const Login = ({ handleLogin }) => {
   const [email, setEmail] = useState('');
@@ -19,40 +20,54 @@ const Login = ({ handleLogin }) => {
     setLoading(true);
 
     try {
+      // Check if the credentials match the hardcoded super admin credentials
       if (email === 'admin@gmail.com' && password === 'admin') {
-        // Set up hardcoded admin login
         const userData = { email, isAdmin: true, userId: 'admin-id' };
         localStorage.setItem('user', JSON.stringify(userData));
         handleLogin(userData.userId, userData.email, userData.isAdmin);
         navigate('/admindash');
-      } else {
-        // Normal user login
-        const response = await fetch('https://m-store-server-ryl5.onrender.com/api/users/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ email, password }),
-        });
+        return;
+      } 
 
-        if (!response.ok) {
-          const { message } = await response.json();
-          throw new Error(message || 'Login failed. Please check your credentials.');
+      // Attempt to log in as an admin
+      try {
+        const adminResponse = await axios.post(
+          'https://m-store-server-ryl5.onrender.com/api/admin/login',
+          { email, password },
+          { withCredentials: true }
+        );
+
+        if (adminResponse.status === 200) {
+          const adminData = adminResponse.data;
+          adminData.isAdmin = true;
+          localStorage.setItem('user', JSON.stringify(adminData));
+          handleLogin(adminData.userId, adminData.email, adminData.isAdmin);
+          navigate('/admindash');
+          return;  // Exit if admin login is successful
         }
-
-        const userData = await response.json();
-        localStorage.setItem('user', JSON.stringify(userData));
-        handleLogin(userData.token, userData.email, userData.userId, userData.isAdmin);
-
-        // Redirect based on admin status from the API response
-        if (userData.isAdmin) {
-          navigate('/admin-dashboard'); // Redirect to admin dashboard
-        } else {
-          navigate('/'); // Redirect to home for regular users
-        }
+      } catch (adminError) {
+        // Handle admin login failure but continue to user login
+        console.warn("Admin login failed, attempting user login.");
+        // Optionally you can log the error
+        console.error("Admin login error:", adminError);
       }
-    } catch (err) {
-      setError(err.message);
+
+      // Now attempt to log in as a regular user
+      const userResponse = await axios.post(
+        'https://m-store-server-ryl5.onrender.com/api/users/login',
+        { email, password },
+        { withCredentials: true }
+      );
+
+      const userData = userResponse.data;
+      userData.isAdmin = false;
+      localStorage.setItem('user', JSON.stringify(userData));
+      handleLogin(userData.userId, userData.email, userData.isAdmin);
+      navigate('/');
+
+    } catch (userError) {
+      console.error("User login error:", userError);
+      setError(userError.response?.data?.message || 'Login failed. Please check your credentials.');
     } finally {
       setLoading(false);
     }

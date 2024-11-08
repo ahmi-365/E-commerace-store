@@ -5,13 +5,14 @@ import { Button, Table, Form, Modal } from 'react-bootstrap';
 const AdminDash = () => {
   const [subAdmins, setSubAdmins] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [currentAdminId, setCurrentAdminId] = useState(null);
   const [newSubAdmin, setNewSubAdmin] = useState({ email: '', role: '', password: '', confirmPassword: '' });
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [roles, setRoles] = useState(['Products Admin', 'Order Admin', 'Coupon Admin']);
 
   useEffect(() => {
-    // Fetch sub-admins from the backend
     const fetchSubAdmins = async () => {
       try {
         const response = await axios.get('https://m-store-server-ryl5.onrender.com/api/admin/subadmins', { withCredentials: true });
@@ -21,47 +22,73 @@ const AdminDash = () => {
         setError("Failed to load sub-admins. Please try again.");
       }
     };
-
     fetchSubAdmins();
   }, []);
 
-  const handleCreateSubAdmin = async () => {
+  const handleCreateOrUpdateSubAdmin = async () => {
     if (newSubAdmin.password !== newSubAdmin.confirmPassword) {
       setError("Passwords do not match");
       return;
     }
-
+    
     try {
-      const response = await axios.post('https://m-store-server-ryl5.onrender.com/api/admin/subadmins', {
-        email: newSubAdmin.email,
-        role: newSubAdmin.role,
-        password: newSubAdmin.password,
-      }, {
-        withCredentials: true, // send the session cookie with the request
-      });
+      if (isUpdating) {
+        // Update existing sub-admin
+        await axios.put(`https://m-store-server-ryl5.onrender.com/api/admin/subadmins/${currentAdminId}`, {
+          email: newSubAdmin.email,
+          role: newSubAdmin.role,
+          password: newSubAdmin.password,
+        }, {
+          withCredentials: true,
+        });
 
-      setSubAdmins([...subAdmins, response.data]);
+        setSubAdmins(subAdmins.map(admin => 
+          admin._id === currentAdminId ? { ...admin, email: newSubAdmin.email, role: newSubAdmin.role } : admin
+        ));
+        setSuccessMessage("Sub-admin updated successfully!");
+      } else {
+        // Create new sub-admin
+        const response = await axios.post('https://m-store-server-ryl5.onrender.com/api/admin/subadmins', {
+          email: newSubAdmin.email,
+          role: newSubAdmin.role,
+          password: newSubAdmin.password,
+        }, {
+          withCredentials: true,
+        });
+
+        setSubAdmins([...subAdmins, response.data]);
+        setSuccessMessage("Sub-admin created successfully!");
+      }
+
       setShowModal(false);
       setNewSubAdmin({ email: '', role: '', password: '', confirmPassword: '' });
       setError('');
-      setSuccessMessage("Sub-admin created successfully!");
+      setIsUpdating(false);
+      setCurrentAdminId(null);
     } catch (error) {
-      console.error("Error creating sub-admin:", error);
-      setError("Failed to create sub-admin. Please try again.");
+      console.error("Error creating/updating sub-admin:", error);
+      setError("Failed to create/update sub-admin. Please try again.");
     }
   };
 
   const handleDeleteSubAdmin = async (id) => {
     try {
       await axios.delete(`https://m-store-server-ryl5.onrender.com/api/admin/subadmins/${id}`, {
-        withCredentials: true, // send the session cookie with the request
+        withCredentials: true,
       });
-      setSubAdmins(subAdmins.filter(admin => admin.id !== id));
+      setSubAdmins(subAdmins.filter(admin => admin._id !== id));
       setSuccessMessage("Sub-admin deleted successfully!");
     } catch (error) {
       console.error("Error deleting sub-admin:", error);
       setError("Failed to delete sub-admin. Please try again.");
     }
+  };
+
+  const openUpdateModal = (admin) => {
+    setNewSubAdmin({ email: admin.email, role: admin.role, password: '', confirmPassword: '' });
+    setCurrentAdminId(admin._id);
+    setIsUpdating(true);
+    setShowModal(true);
   };
 
   return (
@@ -70,7 +97,7 @@ const AdminDash = () => {
       {successMessage && <p className="text-success">{successMessage}</p>}
       {error && <p className="text-danger">{error}</p>}
       
-      <Button variant="primary" onClick={() => setShowModal(true)}>
+      <Button variant="primary" onClick={() => { setShowModal(true); setIsUpdating(false); }}>
         Create Sub-Admin
       </Button>
 
@@ -84,11 +111,12 @@ const AdminDash = () => {
         </thead>
         <tbody>
           {subAdmins.map(admin => (
-            <tr key={admin.id}>
+            <tr key={admin._id}>
               <td>{admin.email}</td>
               <td>{admin.role}</td>
               <td>
-                <Button variant="danger" onClick={() => handleDeleteSubAdmin(admin.id)}>Delete</Button>
+                <Button variant="warning" onClick={() => openUpdateModal(admin)}>Update</Button>{' '}
+                <Button variant="danger" onClick={() => handleDeleteSubAdmin(admin._id)}>Delete</Button>
               </td>
             </tr>
           ))}
@@ -97,7 +125,7 @@ const AdminDash = () => {
 
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Create Sub-Admin</Modal.Title>
+          <Modal.Title>{isUpdating ? "Update Sub-Admin" : "Create Sub-Admin"}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
@@ -147,7 +175,9 @@ const AdminDash = () => {
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowModal(false)}>Close</Button>
-          <Button variant="primary" onClick={handleCreateSubAdmin}>Create Sub-Admin</Button>
+          <Button variant="primary" onClick={handleCreateOrUpdateSubAdmin}>
+            {isUpdating ? "Update Sub-Admin" : "Create Sub-Admin"}
+          </Button>
         </Modal.Footer>
       </Modal>
     </div>
