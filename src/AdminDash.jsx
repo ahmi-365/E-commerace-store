@@ -15,7 +15,13 @@ const AdminDash = () => {
   useEffect(() => {
     const fetchSubAdmins = async () => {
       try {
-        const response = await axios.get('https://m-store-server-ryl5.onrender.com/api/admin/subadmins', { withCredentials: true });
+        const token = localStorage.getItem('token'); // Retrieve the token from localStorage
+        const response = await axios.get('https://m-store-server-ryl5.onrender.com/api/admin/subadmins', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        });
         setSubAdmins(response.data);
       } catch (error) {
         console.error("Error fetching sub-admins:", error);
@@ -30,8 +36,9 @@ const AdminDash = () => {
       setError("Passwords do not match");
       return;
     }
-    
+
     try {
+      const token = localStorage.getItem('token');
       if (isUpdating) {
         // Update existing sub-admin
         await axios.put(`https://m-store-server-ryl5.onrender.com/api/admin/subadmins/${currentAdminId}`, {
@@ -39,6 +46,9 @@ const AdminDash = () => {
           role: newSubAdmin.role,
           password: newSubAdmin.password,
         }, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
           withCredentials: true,
         });
 
@@ -53,6 +63,9 @@ const AdminDash = () => {
           role: newSubAdmin.role,
           password: newSubAdmin.password,
         }, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
           withCredentials: true,
         });
 
@@ -73,7 +86,11 @@ const AdminDash = () => {
 
   const handleDeleteSubAdmin = async (id) => {
     try {
+      const token = localStorage.getItem('token');
       await axios.delete(`https://m-store-server-ryl5.onrender.com/api/admin/subadmins/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
         withCredentials: true,
       });
       setSubAdmins(subAdmins.filter(admin => admin._id !== id));
