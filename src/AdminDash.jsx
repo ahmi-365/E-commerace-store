@@ -7,10 +7,15 @@ const AdminDash = () => {
   const [showModal, setShowModal] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [currentAdminId, setCurrentAdminId] = useState(null);
-  const [newSubAdmin, setNewSubAdmin] = useState({ email: '', role: '', password: '', confirmPassword: '' });
+  const [newSubAdmin, setNewSubAdmin] = useState({
+    email: '',
+    role: 'Admin', // Set default role to 'Admin' for new sub-admins
+    password: '',
+    confirmPassword: ''
+  });
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const [roles, setRoles] = useState(['Admin', 'Product Admin']);  // Adjusted to reflect actual roles
+  const [roles, setRoles] = useState(['Admin', 'Product Admin','Super Admin','Order Admin','Coupon Admin']);  // Adjusted to reflect actual roles
 
   useEffect(() => {
     const fetchSubAdmins = async () => {
@@ -36,7 +41,12 @@ const AdminDash = () => {
       setError("Passwords do not match");
       return;
     }
-
+  
+    if (!newSubAdmin.role) {
+      setError("Role is required");
+      return;
+    }
+  
     try {
       const token = localStorage.getItem('token');
       if (isUpdating) {
@@ -51,12 +61,12 @@ const AdminDash = () => {
           },
           withCredentials: true,
         });
-
+  
         // Update sub-admin in state without re-fetching
         setSubAdmins(subAdmins.map(admin =>
           admin._id === currentAdminId ? { ...admin, email: newSubAdmin.email, role: newSubAdmin.role } : admin
         ));
-
+  
         setSuccessMessage("Sub-admin updated successfully!");
       } else {
         // Create new sub-admin
@@ -70,24 +80,28 @@ const AdminDash = () => {
           },
           withCredentials: true,
         });
-
+  
         // Add newly created sub-admin to state
         setSubAdmins([...subAdmins, response.data]);
         setSuccessMessage("Sub-admin created successfully!");
       }
-
+  
       // Reset form and modal
       setShowModal(false);
-      setNewSubAdmin({ email: '', role: '', password: '', confirmPassword: '' });
+      setNewSubAdmin({ email: '', role: 'Admin', password: '', confirmPassword: '' }); // Reset with default 'Admin' role
       setError('');
       setIsUpdating(false);
       setCurrentAdminId(null);
-
+  
       // Clear success message after 3 seconds
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (error) {
       console.error("Error creating/updating sub-admin:", error);
-      setError("Failed to create/update sub-admin. Please try again.");
+      if (error.response) {
+        setError(`Error: ${error.response.data.message || 'Failed to create/update sub-admin.'}`);
+      } else {
+        setError("Failed to create/update sub-admin. Please try again.");
+      }
     }
   };
 
@@ -110,26 +124,17 @@ const AdminDash = () => {
   };
 
   const openUpdateModal = (admin) => {
-    setNewSubAdmin({ email: admin.email, role: admin.role, password: '', confirmPassword: '' });
+    setNewSubAdmin({
+      email: admin.email,
+      role: admin.role || 'Admin', // Default to 'Admin' if no role is provided
+      password: '',
+      confirmPassword: ''
+    });
     setCurrentAdminId(admin._id);
     setIsUpdating(true);
     setShowModal(true);
   };
-  const handleLogin = async () => {
-    try {
-      const response = await axios.post('/api/auth/login', { email, password });
-      const { token, role } = response.data;
-  
-      // Store the user details in localStorage
-      localStorage.setItem('user', JSON.stringify({ isLoggedIn: true, token, role }));
-  
-      // Redirect to the admin dashboard or appropriate page
-      navigate('/admin-dashboard');
-    } catch (error) {
-      console.error('Login error:', error);
-    }
-  };
-  
+
   return (
     <div className="container">
       <h1>Admin Dashboard</h1>

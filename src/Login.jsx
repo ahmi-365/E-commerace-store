@@ -25,34 +25,47 @@ const Login = ({ handleLogin }) => {
         const userData = { email, isAdmin: true, userId: 'admin-id' };
         localStorage.setItem('user', JSON.stringify(userData));
         handleLogin(userData.userId, userData.email, userData.isAdmin);
-        navigate('/');
+        navigate('/admindash');
         return;
-      } 
+      }
 
-      // Attempt to log in as an admin
+      // Attempt to log in as an admin or subadmin (checking against the database)
       try {
-        const adminResponse = await axios.post(
+        const response = await axios.post(
           'https://m-store-server-ryl5.onrender.com/api/admin/login',
           { email, password },
           { withCredentials: true }
         );
 
-        if (adminResponse.status === 200) {
-          const adminData = adminResponse.data;
-          adminData.isAdmin = true;
-          localStorage.setItem('user', JSON.stringify(adminData));
-          handleLogin(adminData.userId, adminData.email, adminData.isAdmin);
-          navigate('/admindash');
-          return;  // Exit if admin login is successful
+        if (response.status === 200) {
+          const userData = response.data;
+          const { role, userId } = userData;
+
+          // Store user data in localStorage
+          localStorage.setItem('user', JSON.stringify({
+            isLoggedIn: true,
+            token: response.data.token,
+            role,  // Store role
+            userId,
+          }));
+          handleLogin(userId, email, role);
+          // Redirect based on role
+          if (role === 'admin') {
+            navigate('/admindash');
+          } else if (role === 'subadmin') {
+            navigate('/subadmindash');
+          } else {
+            navigate('/');
+          }
+          return;
         }
-      } catch (adminError) {
+      } catch (error) {
         // Handle admin login failure but continue to user login
-        console.warn("Admin login failed, attempting user login.");
-        // Optionally you can log the error
-        console.error("Admin login error:", adminError);
+        console.warn('Admin login failed, attempting user login.');
+        console.error('Admin login error:', error);
       }
 
-      // Now attempt to log in as a regular user
+      // Now attempt to log in as a regular user (checking against the database)
       const userResponse = await axios.post(
         'https://m-store-server-ryl5.onrender.com/api/users/login',
         { email, password },
@@ -66,7 +79,7 @@ const Login = ({ handleLogin }) => {
       navigate('/');
 
     } catch (userError) {
-      console.error("User login error:", userError);
+      console.error('User login error:', userError);
       setError(userError.response?.data?.message || 'Login failed. Please check your credentials.');
     } finally {
       setLoading(false);
@@ -125,3 +138,4 @@ const Login = ({ handleLogin }) => {
 };
 
 export default Login;
+
