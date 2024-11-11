@@ -29,6 +29,7 @@ import LoadingSpinner from "./LoadingSpinner";
 import PaymentDetails from "./PaymentDetails";
 import AdminDash from "./AdminDash";
 import ProtectedRoute from "./ProtectedRoute";
+import RoleManage from "./RoleManage";
 
 const App = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -237,12 +238,14 @@ const App = () => {
             <Route path="/coupen" element={<Coupon />} />
             <Route path="/coupenhistory" element={<CoupenHistory />} />
             <Route path="/applycoupen" element={<ApplyCoupen />} />
+            <Route path="/RoleManage" element={<RoleManage />} />
             <Route
               path="/admindash"
               element={
                 <ProtectedRoute element={<AdminDash />} requiredRole="Admin" />
               }
             />{" "}
+           
             <Route
               path="/login"
               element={<Login handleLogin={handleLogin} />}

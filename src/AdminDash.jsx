@@ -1,29 +1,40 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Button, Table, Form, Modal } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 
 const AdminDash = () => {
   const [subAdmins, setSubAdmins] = useState([]);
+  const [roles, setRoles] = useState([]); // Initialize roles as empty
   const [showModal, setShowModal] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [currentAdminId, setCurrentAdminId] = useState(null);
   const [newSubAdmin, setNewSubAdmin] = useState({
     email: '',
-    role: 'Admin', // Set default role to 'Admin' for new sub-admins
+    role: '', // Set to an empty string initially
     password: '',
     confirmPassword: ''
   });
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const [roles, setRoles] = useState(['Admin', 'Product Admin','Super Admin','Order Admin','Coupon Admin']);  // Adjusted to reflect actual roles
 
+  // Fetch roles from the backend when the component mounts
   useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        const response = await axios.get('https://m-store-server-ryl5.onrender.com/api/roles');
+        setRoles(response.data.map(role => role.name)); // Map roles to an array of role names
+      } catch (error) {
+        console.error("Error fetching roles:", error);
+      }
+    };
+
     const fetchSubAdmins = async () => {
       try {
-        const token = localStorage.getItem('token'); // Retrieve the token from localStorage
+        const token = localStorage.getItem('token'); 
         const response = await axios.get('https://m-store-server-ryl5.onrender.com/api/admin/subadmins', {
           headers: {
-            Authorization: `Bearer ${token}`, // Ensure this header is set
+            Authorization: `Bearer ${token}`,
           },
           withCredentials: true,
         });
@@ -33,20 +44,22 @@ const AdminDash = () => {
         setError("Failed to load sub-admins. Please try again.");
       }
     };
+
+    fetchRoles();
     fetchSubAdmins();
-  }, []); // This effect only runs once when the component mounts
-  
+  }, []);
+
   const handleCreateOrUpdateSubAdmin = async () => {
     if (newSubAdmin.password !== newSubAdmin.confirmPassword) {
       setError("Passwords do not match");
       return;
     }
-  
+
     if (!newSubAdmin.role) {
       setError("Role is required");
       return;
     }
-  
+
     try {
       const token = localStorage.getItem('token');
       if (isUpdating) {
@@ -61,12 +74,11 @@ const AdminDash = () => {
           },
           withCredentials: true,
         });
-  
-        // Update sub-admin in state without re-fetching
+
         setSubAdmins(subAdmins.map(admin =>
           admin._id === currentAdminId ? { ...admin, email: newSubAdmin.email, role: newSubAdmin.role } : admin
         ));
-  
+
         setSuccessMessage("Sub-admin updated successfully!");
       } else {
         // Create new sub-admin
@@ -80,20 +92,17 @@ const AdminDash = () => {
           },
           withCredentials: true,
         });
-  
-        // Add newly created sub-admin to state
+
         setSubAdmins([...subAdmins, response.data]);
         setSuccessMessage("Sub-admin created successfully!");
       }
-  
-      // Reset form and modal
+
       setShowModal(false);
-      setNewSubAdmin({ email: '', role: 'Admin', password: '', confirmPassword: '' }); // Reset with default 'Admin' role
+      setNewSubAdmin({ email: '', role: '', password: '', confirmPassword: '' });
       setError('');
       setIsUpdating(false);
       setCurrentAdminId(null);
-  
-      // Clear success message after 3 seconds
+
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (error) {
       console.error("Error creating/updating sub-admin:", error);
@@ -116,7 +125,7 @@ const AdminDash = () => {
       });
       setSubAdmins(subAdmins.filter(admin => admin._id !== id));
       setSuccessMessage("Sub-admin deleted successfully!");
-      setTimeout(() => setSuccessMessage(''), 3000);  // Clear success message after 3 seconds
+      setTimeout(() => setSuccessMessage(''), 3000);
     } catch (error) {
       console.error("Error deleting sub-admin:", error);
       setError("Failed to delete sub-admin. Please try again.");
@@ -126,7 +135,7 @@ const AdminDash = () => {
   const openUpdateModal = (admin) => {
     setNewSubAdmin({
       email: admin.email,
-      role: admin.role || 'Admin', // Default to 'Admin' if no role is provided
+      role: admin.role || '', // Default to empty if no role is provided
       password: '',
       confirmPassword: ''
     });
@@ -145,6 +154,9 @@ const AdminDash = () => {
       <Button variant="primary" onClick={() => { setShowModal(true); setIsUpdating(false); }}>
         Create Sub-Admin
       </Button>
+      <Link to="/RoleManage">      
+        <Button>Create New Role</Button>
+      </Link>
 
       <Table striped bordered hover>
         <thead>
@@ -211,6 +223,7 @@ const AdminDash = () => {
                 value={newSubAdmin.role}
                 onChange={(e) => setNewSubAdmin({ ...newSubAdmin, role: e.target.value })}
               >
+                <option value="">Select Role</option>
                 {roles.map(role => (
                   <option key={role} value={role}>{role}</option>
                 ))}
