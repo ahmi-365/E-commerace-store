@@ -31,6 +31,7 @@ import AdminDash from "./AdminDash";
 import ProtectedRoute from "./ProtectedRoute";
 import RoleManage from "./RoleManage";
 import UserManagment from "./UserManagment";
+import UserManagement from "./UserManagment";
 
 const App = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -187,22 +188,24 @@ const App = () => {
           <div className="text-danger">{error}</div>
         ) : (
           <Routes>
+            
             <Route
               path="/add-product"
               element={<ProductForm fetchProducts={fetchProducts} />}
             />
-            <Route
-              path="/products"
-              element={
-                <ProductList
-                  products={products}
-                  addToCart={addToCart}
-                  deleteProduct={deleteProduct}
-                />
-              }
-            />
-            <Route path="/orderhistory" element={<OrderHistory />} />
-            <Route path="/usermanage" element={<UserManagment />} />
+            <Route path="/admindash" element={<ProtectedRoute superAdminOnly={true} />}>
+  <Route path="" element={<AdminDash />} />
+</Route>
+<Route path="/products" element={<ProtectedRoute requiredPermissions={['manageProducts']} />}>
+  <Route path="" element={<ProductList />} />
+</Route>
+<Route path="/orderhistory" element={<ProtectedRoute requiredPermissions={['viewOrders']} />}>
+  <Route path="" element={<OrderHistory />} />
+</Route>
+<Route path="/usermanage" element={<ProtectedRoute requiredPermissions={['manageUsers']} />}>
+  <Route path="" element={<UserManagement />} />
+</Route>
+
             <Route path="/order-success" element={<OrderSuccess />} />
             <Route
               path="/cart"
@@ -241,13 +244,6 @@ const App = () => {
             <Route path="/coupenhistory" element={<CoupenHistory />} />
             <Route path="/applycoupen" element={<ApplyCoupen />} />
             <Route path="/RoleManage" element={<RoleManage />} />
-            <Route
-              path="/admindash"
-              element={
-                <ProtectedRoute element={<AdminDash />} requiredRole="Admin" />
-              }
-            />{" "}
-           
             <Route
               path="/login"
               element={<Login handleLogin={handleLogin} />}

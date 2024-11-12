@@ -15,13 +15,10 @@ const Login = ({ handleLogin }) => {
   const navigate = useNavigate();
 
   const handleLoginRedirect = (userData) => {
-    // Save user data to localStorage
     localStorage.setItem('user', JSON.stringify(userData));
-    // Update the app's login state using the provided handleLogin function
     handleLogin(userData);
-    // Redirect based on permissions
     if (userData.permissions.includes('allPermissions')) {
-      navigate('/admindash'); // Treat as superadmin
+      navigate('/admindash'); 
     } else if (userData.permissions.includes('manageProducts')) {
       navigate('/products');
     } else if (userData.permissions.includes('viewOrders')) {

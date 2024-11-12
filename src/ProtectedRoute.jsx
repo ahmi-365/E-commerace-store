@@ -1,61 +1,40 @@
-import React, { useEffect, useState } from 'react';
-import { Navigate } from 'react-router-dom';
-import axios from 'axios';
+import React from 'react';
+import { Navigate, Outlet } from 'react-router-dom';
 
-const ProtectedRoute = ({ element, requiredPermission }) => {
-  const [isAuthorized, setIsAuthorized] = useState(null);
-  const user = JSON.parse(localStorage.getItem("user"));
-  const isLoggedIn = user && user.isLoggedIn;
-  const token = user ? user.token : null;
+const ProtectedRoute = ({ requiredPermissions = [], superAdminOnly = false }) => {
+  // Retrieve user data from localStorage
+  const storedUser = localStorage.getItem('user');
+  const userData = storedUser ? JSON.parse(storedUser) : null;
 
-  useEffect(() => {
-    const checkAuthorization = async () => {
-      if (!token) {
-        setIsAuthorized(false);
-        return;
-      }
-
-      try {
-        const response = await axios.get(
-          'https://m-store-server-ryl5.onrender.com/api/admin/subadmins',
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-
-        // Assuming response.data contains a list of subadmins
-        const isSubAdmin = response.data.some((subAdmin) => subAdmin.email === user.email);
-        
-        // Check if the user is either an admin or has the required permission (sub-admin in this case)
-        setIsAuthorized(isSubAdmin || token.id === "admin-id" || requiredPermission === "public");
-      } catch (error) {
-        console.error("Authorization check failed:", error);
-        setIsAuthorized(false);
-      }
-    };
-
-    if (isLoggedIn) {
-      checkAuthorization();
-    } else {
-      setIsAuthorized(false);
-    }
-  }, [isLoggedIn, token, user, requiredPermission]);
-
-  // Show loading while checking authorization
-  if (isAuthorized === null) {
-    return <div>Loading...</div>;
+  // Check if user is logged in
+  if (!userData || !userData.isLoggedIn) {
+    console.log("Access denied: User is not logged in.");
+    return <Navigate to="/login" replace />;
   }
 
-  // Redirect to login if not logged in
-  if (!isLoggedIn) {
-    return <Navigate to="/login" />;
+  // Check if super admin access is required and if the user is a super admin
+  if (superAdminOnly && userData.token.role !== 'superadmin') {
+    console.log("Access denied: Super admin privileges required.");
+    return <Navigate to="/" replace />;
   }
 
-  // Redirect to home if not authorized
-  if (!isAuthorized) {
-    return <Navigate to="/" />;
+  // Get user permissions from token and check required permissions
+  const userPermissions = userData.token.permissions || [];
+  console.log("User Permissions:", userPermissions);
+  console.log("Required Permissions:", requiredPermissions);
+
+  const hasPermission =
+    requiredPermissions.length === 0 ||
+    requiredPermissions.some((perm) => userPermissions.includes(perm));
+
+  if (!hasPermission) {
+    console.log("Access denied: insufficient permissions.");
+    return <Navigate to="/" replace />;
   }
 
-  // If authorized, render the element
-  return element;
+  // Render the protected content if all checks pass
+  return <Outlet />;
 };
 
 export default ProtectedRoute;
+
