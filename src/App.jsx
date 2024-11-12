@@ -30,6 +30,7 @@ import PaymentDetails from "./PaymentDetails";
 import AdminDash from "./AdminDash";
 import ProtectedRoute from "./ProtectedRoute";
 import RoleManage from "./RoleManage";
+import UserManagment from "./UserManagment";
 
 const App = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -201,6 +202,7 @@ const App = () => {
               }
             />
             <Route path="/orderhistory" element={<OrderHistory />} />
+            <Route path="/usermanage" element={<UserManagment />} />
             <Route path="/order-success" element={<OrderSuccess />} />
             <Route
               path="/cart"

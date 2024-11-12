@@ -14,6 +14,27 @@ const Login = ({ handleLogin }) => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
+  const handleLoginRedirect = (userData) => {
+    // Save user data to localStorage
+    localStorage.setItem('user', JSON.stringify(userData));
+    // Update the app's login state using the provided handleLogin function
+    handleLogin(userData);
+    // Redirect based on permissions
+    if (userData.permissions.includes('allPermissions')) {
+      navigate('/admindash'); // Treat as superadmin
+    } else if (userData.permissions.includes('manageProducts')) {
+      navigate('/products');
+    } else if (userData.permissions.includes('viewOrders')) {
+      navigate('/orderhistory');
+    } else if (userData.permissions.includes('manageUsers')) {
+      navigate('/usermanage');
+    } else if (userData.role === 'superadmin') {
+      navigate('/admindash');
+    } else {
+      navigate('/'); // Default to home page if no specific permissions
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -31,49 +52,50 @@ const Login = ({ handleLogin }) => {
           role: 'superadmin',
           id: 'admin-id',
           permissions: ['allPermissions'], // Adjust permissions as needed
+          isAdmin: true,
         };
-        localStorage.setItem('user', JSON.stringify(superAdminData));
-        handleLogin(superAdminData);
-        navigate('/admindash');
+        handleLoginRedirect(superAdminData);
         return;
       }
 
       // Admin/Sub-admin Login
-      try {
-        const response = await axios.post(
-          'https://m-store-server-ryl5.onrender.com/api/admin/login',
-          { email, password },
-          { withCredentials: true }
-        );
+      const response = await axios.post(
+        'https://m-store-server-ryl5.onrender.com/api/admin/login',
+        { email, password },
+        { withCredentials: true }
+      );
 
-        if (response.status === 200) {
-          const { role, token, userId, permissions } = response.data;
-          const adminData = {
+      if (response.status === 200) {
+        const { role, token, userId, permissions } = response.data;
+        
+        // Check if user has 'allPermissions' and treat as superadmin
+        if (permissions.includes('allPermissions')) {
+          const superAdminData = {
             isLoggedIn: true,
             token,
             email,
             id: userId,
-            role,
+            role: 'superadmin',
             permissions,
+            isAdmin: true, // Mark as admin for superadmin
           };
-          localStorage.setItem('user', JSON.stringify(adminData));
-          handleLogin(adminData);
-
-          // Navigate based on role
-          if (role === 'admin') {
-            navigate('/admindash');
-          } else if (role === 'subadmin') {
-            navigate('/subadmindash');
-          } else {
-            navigate('/');
-          }
+          handleLoginRedirect(superAdminData);
           return;
         }
-      } catch (adminError) {
-        console.warn('Admin login failed, attempting user login.');
-        console.error('Admin login error:', adminError);
-      }
 
+        const adminData = {
+          isLoggedIn: true,
+          token,
+          email,
+          id: userId,
+          role,
+          permissions,
+          isAdmin: role === 'admin' || role === 'subadmin',
+        };
+        handleLoginRedirect(adminData);
+        return;
+      }
+      
       // Regular User Login
       const userResponse = await axios.post(
         'https://m-store-server-ryl5.onrender.com/api/users/login',
@@ -89,14 +111,15 @@ const Login = ({ handleLogin }) => {
         id: userId,
         role: 'user',
         permissions: [],
+        isAdmin: false,
       };
-      localStorage.setItem('user', JSON.stringify(userData));
-      handleLogin(userData);
-      navigate('/');
-
+      handleLoginRedirect(userData);
     } catch (loginError) {
       console.error('Login error:', loginError);
-      setError(loginError.response?.data?.message || 'Login failed. Please check your credentials.');
+      setError(
+        loginError.response?.data?.message ||
+          'Login failed. Please check your credentials.'
+      );
     } finally {
       setLoading(false);
     }

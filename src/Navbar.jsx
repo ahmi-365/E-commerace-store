@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Navbar, Nav, Container } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faShoppingCart, faHistory, faUser, faSignOutAlt, faTags, faTachometerAlt } from '@fortawesome/free-solid-svg-icons';  // Importing the dashboard icon
+import { faShoppingCart, faHistory, faUser, faSignOutAlt, faTags, faTachometerAlt } from '@fortawesome/free-solid-svg-icons';
 import './Navbar.css';
 
 const AppNavbar = ({ cartCount, isLoggedIn, userEmail, handleLogout, handleCartClick }) => {
@@ -12,8 +12,8 @@ const AppNavbar = ({ cartCount, isLoggedIn, userEmail, handleLogout, handleCartC
 
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem('user'));
-    if (userData && userData.email === 'admin@gmail.com') {
-      setIsAdmin(true);  // Set admin status if the email matches
+    if (userData && userData.token && userData.token.isAdmin) {
+      setIsAdmin(true);  // Set admin status if `isAdmin` is `true` in token
     } else {
       setIsAdmin(false);  // Set admin status to false for regular users
     }

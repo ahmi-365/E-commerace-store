@@ -1,23 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Button, Table, Modal, Form } from 'react-bootstrap';
+import { Button, Table, Form, Modal } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 
 const AdminDash = () => {
   const [subAdmins, setSubAdmins] = useState([]);
-  const [roles, setRoles] = useState([]);
+  const [roles, setRoles] = useState([]); // Initialize roles as empty
   const [showModal, setShowModal] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [currentAdminId, setCurrentAdminId] = useState(null);
   const [newSubAdmin, setNewSubAdmin] = useState({
     email: '',
-    role: '',
-    permissions: [],  // Add permissions field
+    role: '', // Set to an empty string initially
     password: '',
     confirmPassword: ''
   });
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
+  // Fetch roles from the backend when the component mounts
   useEffect(() => {
     const fetchRoles = async () => {
       try {
@@ -30,7 +31,7 @@ const AdminDash = () => {
 
     const fetchSubAdmins = async () => {
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('token'); 
         const response = await axios.get('https://m-store-server-ryl5.onrender.com/api/admin/subadmins', {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -48,61 +49,120 @@ const AdminDash = () => {
     fetchSubAdmins();
   }, []);
 
-  const handleDeleteSubAdmin = async (id) => {
+  const handleCreateOrUpdateSubAdmin = async () => {
+    if (newSubAdmin.password !== newSubAdmin.confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    if (!newSubAdmin.role) {
+      setError("Role is required");
+      return;
+    }
+
     try {
-      const response = await axios.delete(`https://m-store-server-ryl5.onrender.com/api/admin/subadmins/${id}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
-      setSuccessMessage(response.data.message);
-      setSubAdmins(subAdmins.filter(admin => admin._id !== id));
+      const token = localStorage.getItem('token');
+      if (isUpdating) {
+        // Update existing sub-admin
+        await axios.put(`https://m-store-server-ryl5.onrender.com/api/admin/subadmins/${currentAdminId}`, {
+          email: newSubAdmin.email,
+          role: newSubAdmin.role,
+          password: newSubAdmin.password,
+        }, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        });
+
+        setSubAdmins(subAdmins.map(admin =>
+          admin._id === currentAdminId ? { ...admin, email: newSubAdmin.email, role: newSubAdmin.role } : admin
+        ));
+
+        setSuccessMessage("Sub-admin updated successfully!");
+      } else {
+        // Create new sub-admin
+        const response = await axios.post('https://m-store-server-ryl5.onrender.com/api/admin/subadmins', {
+          email: newSubAdmin.email,
+          role: newSubAdmin.role,
+          password: newSubAdmin.password,
+        }, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        });
+
+        setSubAdmins([...subAdmins, response.data]);
+        setSuccessMessage("Sub-admin created successfully!");
+      }
+
+      setShowModal(false);
+      setNewSubAdmin({ email: '', role: '', password: '', confirmPassword: '' });
+      setError('');
+      setIsUpdating(false);
+      setCurrentAdminId(null);
+
+      setTimeout(() => setSuccessMessage(''), 3000);
     } catch (error) {
-      setError("Failed to delete sub-admin.");
+      console.error("Error creating/updating sub-admin:", error);
+      if (error.response) {
+        setError(`Error: ${error.response.data.message || 'Failed to create/update sub-admin.'}`);
+      } else {
+        setError("Failed to create/update sub-admin. Please try again.");
+      }
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleDeleteSubAdmin = async (id) => {
     try {
-      let response;
-      if (isUpdating) {
-        response = await axios.put(
-          `https://m-store-server-ryl5.onrender.com/api/admin/subadmins/${currentAdminId}`,
-          newSubAdmin, 
-          { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
-        );
-      } else {
-        response = await axios.post(
-          'https://m-store-server-ryl5.onrender.com/api/admin/subadmins', 
-          newSubAdmin, 
-          { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
-        );
-      }
-
-      setSuccessMessage(isUpdating ? 'Sub-admin updated successfully!' : 'Sub-admin created successfully!');
-      setShowModal(false);
-      fetchSubAdmins();
+      const token = localStorage.getItem('token');
+      await axios.delete(`https://m-store-server-ryl5.onrender.com/api/admin/subadmins/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      });
+      setSubAdmins(subAdmins.filter(admin => admin._id !== id));
+      setSuccessMessage("Sub-admin deleted successfully!");
+      setTimeout(() => setSuccessMessage(''), 3000);
     } catch (error) {
-      setError("Failed to submit.");
+      console.error("Error deleting sub-admin:", error);
+      setError("Failed to delete sub-admin. Please try again.");
     }
+  };
+
+  const openUpdateModal = (admin) => {
+    setNewSubAdmin({
+      email: admin.email,
+      role: admin.role || '', // Default to empty if no role is provided
+      password: '',
+      confirmPassword: ''
+    });
+    setCurrentAdminId(admin._id);
+    setIsUpdating(true);
+    setShowModal(true);
   };
 
   return (
     <div className="container">
       <h1>Admin Dashboard</h1>
-      
+
       {successMessage && <p className="text-success">{successMessage}</p>}
       {error && <p className="text-danger">{error}</p>}
 
       <Button variant="primary" onClick={() => { setShowModal(true); setIsUpdating(false); }}>
         Create Sub-Admin
       </Button>
+      <Link to="/RoleManage">      
+        <Button>Create New Role</Button>
+      </Link>
 
       <Table striped bordered hover>
         <thead>
           <tr>
             <th>Email</th>
             <th>Role</th>
-            <th>Permissions</th> {/* Display Permissions */}
             <th>Actions</th>
           </tr>
         </thead>
@@ -111,7 +171,6 @@ const AdminDash = () => {
             <tr key={admin._id}>
               <td>{admin.email}</td>
               <td>{admin.role}</td>
-              <td>{(admin.permissions || []).join(', ')}</td> {/* Show permissions */}
               <td>
                 <Button variant="warning" onClick={() => openUpdateModal(admin)}>Update</Button>{' '}
                 <Button variant="danger" onClick={() => handleDeleteSubAdmin(admin._id)}>Delete</Button>
@@ -121,67 +180,63 @@ const AdminDash = () => {
         </tbody>
       </Table>
 
-      {/* Modal for creating/updating sub-admin */}
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>{isUpdating ? 'Update Sub-Admin' : 'Create Sub-Admin'}</Modal.Title>
+          <Modal.Title>{isUpdating ? "Update Sub-Admin" : "Create Sub-Admin"}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form onSubmit={handleSubmit}>
+          <Form>
             <Form.Group controlId="formEmail">
               <Form.Label>Email</Form.Label>
               <Form.Control
                 type="email"
+                placeholder="Enter email"
                 value={newSubAdmin.email}
                 onChange={(e) => setNewSubAdmin({ ...newSubAdmin, email: e.target.value })}
-                required
               />
             </Form.Group>
+
+            <Form.Group controlId="formPassword">
+              <Form.Label>Password</Form.Label>
+              <Form.Control
+                type="password"
+                placeholder="Enter password"
+                value={newSubAdmin.password}
+                onChange={(e) => setNewSubAdmin({ ...newSubAdmin, password: e.target.value })}
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formConfirmPassword">
+              <Form.Label>Confirm Password</Form.Label>
+              <Form.Control
+                type="password"
+                placeholder="Confirm password"
+                value={newSubAdmin.confirmPassword}
+                onChange={(e) => setNewSubAdmin({ ...newSubAdmin, confirmPassword: e.target.value })}
+              />
+            </Form.Group>
+
             <Form.Group controlId="formRole">
               <Form.Label>Role</Form.Label>
               <Form.Control
                 as="select"
                 value={newSubAdmin.role}
                 onChange={(e) => setNewSubAdmin({ ...newSubAdmin, role: e.target.value })}
-                required
               >
-                <option value="productAdmin">Product Admin</option>
-                <option value="orderAdmin">Order Admin</option>
-                <option value="superAdmin">Super Admin</option>
+                <option value="">Select Role</option>
+                {roles.map(role => (
+                  <option key={role} value={role}>{role}</option>
+                ))}
               </Form.Control>
             </Form.Group>
-            <Form.Group controlId="formPermissions">
-              <Form.Label>Permissions</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows="3"
-                value={newSubAdmin.permissions.join(', ')}
-                onChange={(e) => setNewSubAdmin({ ...newSubAdmin, permissions: e.target.value.split(', ') })}
-                placeholder="Enter permissions separated by commas"
-                required
-              />
-            </Form.Group>
-            <Form.Group controlId="formPassword">
-              <Form.Label>Password</Form.Label>
-              <Form.Control
-                type="password"
-                value={newSubAdmin.password}
-                onChange={(e) => setNewSubAdmin({ ...newSubAdmin, password: e.target.value })}
-                required
-              />
-            </Form.Group>
-            <Form.Group controlId="formConfirmPassword">
-              <Form.Label>Confirm Password</Form.Label>
-              <Form.Control
-                type="password"
-                value={newSubAdmin.confirmPassword}
-                onChange={(e) => setNewSubAdmin({ ...newSubAdmin, confirmPassword: e.target.value })}
-                required
-              />
-            </Form.Group>
-            <Button variant="primary" type="submit">{isUpdating ? 'Update' : 'Create'}</Button>
           </Form>
         </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>Close</Button>
+          <Button variant="primary" onClick={handleCreateOrUpdateSubAdmin}>
+            {isUpdating ? "Update Sub-Admin" : "Create Sub-Admin"}
+          </Button>
+        </Modal.Footer>
       </Modal>
     </div>
   );

@@ -8,9 +8,10 @@ const RoleManage = () => {
     manageProducts: false,
     viewOrders: false,
     manageUsers: false,
+    manageCoupons: false,
+    superAdmin: false, // Updated label for Super Admin
   });
 
-  // Fetch roles from the backend on component mount
   useEffect(() => {
     const fetchRoles = async () => {
       try {
@@ -26,7 +27,9 @@ const RoleManage = () => {
   const handleCreateRole = async () => {
     const newRole = {
       name: roleName,
-      permissions: Object.keys(permissions).filter((perm) => permissions[perm]),
+      permissions: permissions.superAdmin
+        ? ['allPermissions']
+        : Object.keys(permissions).filter((perm) => permissions[perm] && perm !== 'superAdmin'),
     };
 
     try {
@@ -36,17 +39,35 @@ const RoleManage = () => {
       );
       setRoles([...roles, response.data]);
       setRoleName('');
-      setPermissions({ manageProducts: false, viewOrders: false, manageUsers: false });
+      setPermissions({
+        manageProducts: false,
+        viewOrders: false,
+        manageUsers: false,
+        manageCoupons: false,
+        superAdmin: false,
+      });
     } catch (error) {
       console.error('Error creating role:', error);
     }
   };
 
   const togglePermission = (permission) => {
-    setPermissions((prevPermissions) => ({
-      ...prevPermissions,
-      [permission]: !prevPermissions[permission],
-    }));
+    if (permission === 'superAdmin') {
+      setPermissions((prevPermissions) => {
+        const isSuperAdmin = !prevPermissions.superAdmin;
+        const updatedPermissions = Object.keys(prevPermissions).reduce((acc, perm) => {
+          acc[perm] = perm === 'superAdmin' ? isSuperAdmin : isSuperAdmin;
+          return acc;
+        }, {});
+        return updatedPermissions;
+      });
+    } else {
+      setPermissions((prevPermissions) => ({
+        ...prevPermissions,
+        [permission]: !prevPermissions[permission],
+        superAdmin: false,
+      }));
+    }
   };
 
   return (
@@ -93,7 +114,7 @@ const RoleManage = () => {
               View Orders
             </label>
           </div>
-          <div className="form-check mb-3">
+          <div className="form-check">
             <input
               type="checkbox"
               className="form-check-input"
@@ -103,6 +124,31 @@ const RoleManage = () => {
             />
             <label className="form-check-label" htmlFor="manageUsers">
               Manage Users
+            </label>
+          </div>
+          <div className="form-check mb-3">
+            <input
+              type="checkbox"
+              className="form-check-input"
+              id="manageCoupons"
+              checked={permissions.manageCoupons}
+              onChange={() => togglePermission('manageCoupons')}
+            />
+            <label className="form-check-label" htmlFor="manageCoupons">
+              Manage Coupons
+            </label>
+          </div>
+
+          <div className="form-check mb-3">
+            <input
+              type="checkbox"
+              className="form-check-input"
+              id="superAdmin"
+              checked={permissions.superAdmin}
+              onChange={() => togglePermission('superAdmin')}
+            />
+            <label className="form-check-label" htmlFor="superAdmin">
+              Super Admin (All Permissions)
             </label>
           </div>
 
@@ -117,7 +163,11 @@ const RoleManage = () => {
           <h4 className="card-title">Existing Roles</h4>
           <ul className="list-group">
             {roles.map((role) => (
-              <li key={role.id} className="list-group-item d-flex justify-content-between align-items-center">
+              <li
+                key={role.id}
+                className="list-group-item d-flex justify-content-between align-items-center"
+                style={{ cursor: 'default', backgroundColor: 'inherit', transition: 'none' }} // Removes hover effects
+              >
                 <div>
                   <strong>{role.name}</strong> - Permissions: {role.permissions.join(', ')}
                 </div>
