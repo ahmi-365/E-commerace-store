@@ -19,17 +19,26 @@ const Login = ({ handleLogin }) => {
     setError('');
     setLoading(true);
 
+    // Clear any previous user data
+    localStorage.removeItem('user');
+
     try {
-      // Check if the credentials match the hardcoded super admin credentials
+      // Super Admin Login
       if (email === 'admin@gmail.com' && password === 'admin') {
-        const userData = { email, isAdmin: true, userId: 'admin-id' };
-        localStorage.setItem('user', JSON.stringify(userData));
-        handleLogin(userData.userId, userData.email, userData.isAdmin);
+        const superAdminData = {
+          isLoggedIn: true,
+          email: 'admin@gmail.com',
+          role: 'superadmin',
+          id: 'admin-id',
+          permissions: ['allPermissions'], // Adjust permissions as needed
+        };
+        localStorage.setItem('user', JSON.stringify(superAdminData));
+        handleLogin(superAdminData);
         navigate('/admindash');
         return;
       }
 
-      // Attempt to log in as an admin or subadmin (checking against the database)
+      // Admin/Sub-admin Login
       try {
         const response = await axios.post(
           'https://m-store-server-ryl5.onrender.com/api/admin/login',
@@ -38,18 +47,19 @@ const Login = ({ handleLogin }) => {
         );
 
         if (response.status === 200) {
-          const userData = response.data;
-          const { role, userId } = userData;
-
-          // Store user data in localStorage
-          localStorage.setItem('user', JSON.stringify({
+          const { role, token, userId, permissions } = response.data;
+          const adminData = {
             isLoggedIn: true,
-            token: response.data.token,
-            role,  // Store role
-            userId,
-          }));
-          handleLogin(userId, email, role);
-          // Redirect based on role
+            token,
+            email,
+            id: userId,
+            role,
+            permissions,
+          };
+          localStorage.setItem('user', JSON.stringify(adminData));
+          handleLogin(adminData);
+
+          // Navigate based on role
           if (role === 'admin') {
             navigate('/admindash');
           } else if (role === 'subadmin') {
@@ -59,28 +69,34 @@ const Login = ({ handleLogin }) => {
           }
           return;
         }
-      } catch (error) {
-        // Handle admin login failure but continue to user login
+      } catch (adminError) {
         console.warn('Admin login failed, attempting user login.');
-        console.error('Admin login error:', error);
+        console.error('Admin login error:', adminError);
       }
 
-      // Now attempt to log in as a regular user (checking against the database)
+      // Regular User Login
       const userResponse = await axios.post(
         'https://m-store-server-ryl5.onrender.com/api/users/login',
         { email, password },
         { withCredentials: true }
       );
 
-      const userData = userResponse.data;
-      userData.isAdmin = false;
+      const { token, userId } = userResponse.data;
+      const userData = {
+        isLoggedIn: true,
+        token,
+        email,
+        id: userId,
+        role: 'user',
+        permissions: [],
+      };
       localStorage.setItem('user', JSON.stringify(userData));
-      handleLogin(userData.userId, userData.email, userData.isAdmin);
+      handleLogin(userData);
       navigate('/');
 
-    } catch (userError) {
-      console.error('User login error:', userError);
-      setError(userError.response?.data?.message || 'Login failed. Please check your credentials.');
+    } catch (loginError) {
+      console.error('Login error:', loginError);
+      setError(loginError.response?.data?.message || 'Login failed. Please check your credentials.');
     } finally {
       setLoading(false);
     }
@@ -138,4 +154,3 @@ const Login = ({ handleLogin }) => {
 };
 
 export default Login;
-
