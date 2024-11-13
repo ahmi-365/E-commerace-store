@@ -1,0 +1,19 @@
+.table {
+ margin-top: 20px;
+}
+
+.table th {
+ background-color: #f8f9fa;
+}
+
+.table td {
+ vertical-align: middle;
+}
+
+.btn {
+ margin: 0 5px;
+}
+
+.table th, .table td {
+ text-align: center;
+}
