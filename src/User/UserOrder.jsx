@@ -20,6 +20,10 @@ const UserOrderHistory = () => {
       try {
         const response = await axios.get("https://m-store-server-ryl5.onrender.com/api/orders");
         const userOrders = response.data.filter(order => order.userEmail === userEmail);
+
+        // Sort orders by creation date, assuming `createdAt` is the date field in each order object.
+        userOrders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); // Latest order first
+
         setOrders(userOrders);
       } catch (error) {
         console.error("Error fetching orders:", error);
