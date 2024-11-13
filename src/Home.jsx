@@ -20,7 +20,7 @@ const Home = () => {
         <Container>
           <h1>Welcome to E-Commerce</h1>
           <p>Your one-stop solution for interactive apps and websites</p>
-          <Button variant="primary" as={Link} to="/products" className="m-2">Shop Now</Button>
+          <Button variant="primary" as={Link} to="/UserProductList" className="m-2">Shop Now</Button>
           <Button variant="outline-light" className="m-2">Learn More</Button>
         </Container>
       </div>
@@ -39,7 +39,7 @@ const Home = () => {
               />
               <Card.Body>
                 <Card.Text>Explore the best features of this product.</Card.Text>
-                <Button variant="primary" as={Link} to="/products">View Product</Button>
+                <Button variant="primary" as={Link} to="/UserProductList">View Product</Button>
               </Card.Body>
             </Card>
           </Col>
@@ -54,7 +54,7 @@ const Home = () => {
               />
               <Card.Body>
                 <Card.Text>Check out the premium features here.</Card.Text>
-                <Button variant="primary" as={Link} to="/products">View Product</Button>
+                <Button variant="primary" as={Link} to="/UserProductList">View Product</Button>
               </Card.Body>
             </Card>
           </Col>
@@ -69,7 +69,7 @@ const Home = () => {
               />
               <Card.Body>
                 <Card.Text>Find out more about this top product.</Card.Text>
-                <Button variant="primary" as={Link} to="/products">View Product</Button>
+                <Button variant="primary" as={Link} to="/UserProductList">View Product</Button>
               </Card.Body>
             </Card>
           </Col>

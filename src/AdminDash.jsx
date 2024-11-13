@@ -146,7 +146,7 @@ const AdminDash = () => {
 
   return (
     <div className="container">
-      <h1>Admin Dashboard</h1>
+      <h1>Sub Admin Managment</h1>
 
       {successMessage && <p className="text-success">{successMessage}</p>}
       {error && <p className="text-danger">{error}</p>}
