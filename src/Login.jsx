@@ -18,7 +18,7 @@ const Login = ({ handleLogin }) => {
     localStorage.setItem('user', JSON.stringify(userData));
     handleLogin(userData);
     if (userData.permissions.includes('allPermissions')) {
-      navigate('/admindash'); 
+      navigate('/admindash'); // Treat as superadmin
     } else if (userData.permissions.includes('manageProducts')) {
       navigate('/products');
     } else if (userData.permissions.includes('viewOrders')) {
@@ -36,10 +36,10 @@ const Login = ({ handleLogin }) => {
     e.preventDefault();
     setError('');
     setLoading(true);
-
+  
     // Clear any previous user data
     localStorage.removeItem('user');
-
+  
     try {
       // Super Admin Login
       if (email === 'admin@gmail.com' && password === 'admin') {
@@ -54,17 +54,17 @@ const Login = ({ handleLogin }) => {
         handleLoginRedirect(superAdminData);
         return;
       }
-
+  
       // Admin/Sub-admin Login
       const response = await axios.post(
         'https://m-store-server-ryl5.onrender.com/api/admin/login',
         { email, password },
         { withCredentials: true }
       );
-
+  
       if (response.status === 200) {
-        const { role, token, userId, permissions } = response.data;
-        
+        const { role, token, userId, permissions = [] } = response.data;
+  
         // Check if user has 'allPermissions' and treat as superadmin
         if (permissions.includes('allPermissions')) {
           const superAdminData = {
@@ -79,7 +79,7 @@ const Login = ({ handleLogin }) => {
           handleLoginRedirect(superAdminData);
           return;
         }
-
+  
         const adminData = {
           isLoggedIn: true,
           token,
@@ -92,14 +92,14 @@ const Login = ({ handleLogin }) => {
         handleLoginRedirect(adminData);
         return;
       }
-      
+  
       // Regular User Login
       const userResponse = await axios.post(
         'https://m-store-server-ryl5.onrender.com/api/users/login',
         { email, password },
         { withCredentials: true }
       );
-
+  
       const { token, userId } = userResponse.data;
       const userData = {
         isLoggedIn: true,
@@ -115,12 +115,13 @@ const Login = ({ handleLogin }) => {
       console.error('Login error:', loginError);
       setError(
         loginError.response?.data?.message ||
-          'Login failed. Please check your credentials.'
+        'Login failed. Please check your credentials.'
       );
     } finally {
       setLoading(false);
     }
   };
+  
 
   return (
     <div className="container d-flex justify-content-center align-items-center min-vh-100">

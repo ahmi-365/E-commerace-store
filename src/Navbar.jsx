@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Navbar, Nav, Container } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faShoppingCart, faHistory, faUser, faSignOutAlt, faTags, faTachometerAlt } from '@fortawesome/free-solid-svg-icons';
+import { faShoppingCart, faHistory, faUser, faSignOutAlt, faTags, faTachometerAlt, faClipboardList } from '@fortawesome/free-solid-svg-icons';
 import './Navbar.css';
 
 const AppNavbar = ({ cartCount, isLoggedIn, userEmail, handleLogout, handleCartClick }) => {
@@ -31,7 +31,7 @@ const AppNavbar = ({ cartCount, isLoggedIn, userEmail, handleLogout, handleCartC
         <Navbar.Toggle aria-controls="basic-navbar-nav" onClick={() => setExpanded(!expanded)} />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
-            <Nav.Link as={Link} to="/products" onClick={handleLinkClick}>Products</Nav.Link>
+            <Nav.Link as={Link} to="/UserProductList" onClick={handleLinkClick}>Products</Nav.Link>
           </Nav>
           <Nav className="ml-auto d-flex align-items-center mobile-nav">
             <Nav.Link as={Link} to="/orderhistory" className="d-flex align-items-center" onClick={handleLinkClick}>
@@ -42,18 +42,26 @@ const AppNavbar = ({ cartCount, isLoggedIn, userEmail, handleLogout, handleCartC
               <FontAwesomeIcon icon={faTags} className="me-1" />
               <span>Coupon History</span>
             </Nav.Link>
-            <Nav.Link onClick={() => { handleCartClick(); handleLinkClick(); }} className="d-flex align-items-center ms-3">
+            
+            {isLoggedIn ? (
+              <>
+               <Nav.Link as={Link} to="/products" className="d-flex align-items-center ms-3" onClick={handleLinkClick}>
+                      <FontAwesomeIcon icon={faClipboardList} className="me-1" />
+                      <span>Product Management</span>
+                    </Nav.Link>
+                {isAdmin && (
+                  <>
+                    <Nav.Link as={Link} to="/admindash" className="d-flex align-items-center ms-3" onClick={handleLinkClick}>
+                      <FontAwesomeIcon icon={faTachometerAlt} className="me-1" />
+                      <span>Admin Dashboard</span>
+                    </Nav.Link>
+                   
+                  </>
+                )}
+                <Nav.Link onClick={() => { handleCartClick(); handleLinkClick(); }} className="d-flex align-items-center ms-3">
               <FontAwesomeIcon icon={faShoppingCart} className="me-1" />
               {cartCount > 0 && <span className="badge bg-danger ms-1">{cartCount}</span>}
             </Nav.Link>
-            {isLoggedIn ? (
-              <>
-                {isAdmin && (
-                  <Nav.Link as={Link} to="/admindash" className="d-flex align-items-center ms-3" onClick={handleLinkClick}>
-                    <FontAwesomeIcon icon={faTachometerAlt} className="me-1" />  {/* Admin dashboard icon */}
-                    <span>Admin Dashboard</span>
-                  </Nav.Link>
-                )}
                 <Nav.Link className="d-flex align-items-center" onClick={handleLinkClick}>
                   <Link to="/account">
                     <FontAwesomeIcon icon={faUser} className="me-1" />

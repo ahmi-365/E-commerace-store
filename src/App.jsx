@@ -32,6 +32,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import RoleManage from "./RoleManage";
 import UserManagment from "./UserManagment";
 import UserManagement from "./UserManagment";
+import UserProductList from "./User/UserProduct";
 
 const App = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -191,21 +192,53 @@ const App = () => {
             
             <Route
               path="/add-product"
-              element={<ProductForm fetchProducts={fetchProducts} />}
+              element={
+                <ProtectedRoute requiredPermissions={["manageProducts"]}>
+                  <ProductForm fetchProducts={fetchProducts} />
+                </ProtectedRoute>
+              }
             />
-            <Route path="/admindash" element={<ProtectedRoute superAdminOnly={true} />}>
-  <Route path="" element={<AdminDash />} />
-</Route>
-<Route path="/products" element={<ProtectedRoute requiredPermissions={['manageProducts']} />}>
-  <Route path="" element={<ProductList />} />
-</Route>
-<Route path="/orderhistory" element={<ProtectedRoute requiredPermissions={['viewOrders']} />}>
-  <Route path="" element={<OrderHistory />} />
-</Route>
-<Route path="/usermanage" element={<ProtectedRoute requiredPermissions={['manageUsers']} />}>
-  <Route path="" element={<UserManagement />} />
-</Route>
-
+            <Route
+              path="/rolemanage"
+              element={<ProtectedRoute superAdminOnly={true} />}
+            >
+              <Route path="" element={<RoleManage />} />
+            </Route>
+            <Route
+              path="/admindash"
+              element={<ProtectedRoute superAdminOnly={true} />}
+            >
+              <Route path="" element={<AdminDash />} />
+            </Route>
+            <Route
+              path="/products"
+              element={
+                <ProtectedRoute requiredPermissions={["manageProducts"]} />
+              }
+            >
+              <Route
+                path=""
+                element={
+                  <ProductList
+                    products={products}
+                    addToCart={addToCart}
+                    deleteProduct={deleteProduct}
+                  />
+                }
+              />
+            </Route>
+            <Route
+              path="/orderhistory"
+              element={<ProtectedRoute requiredPermissions={["viewOrders"]} />}
+            >
+              <Route path="" element={<OrderHistory />} />
+            </Route>
+            <Route
+              path="/usermanage"
+              element={<ProtectedRoute requiredPermissions={["manageUsers"]} />}
+            >
+              <Route path="" element={<UserManagement />} />
+            </Route>
             <Route path="/order-success" element={<OrderSuccess />} />
             <Route
               path="/cart"
@@ -237,13 +270,22 @@ const App = () => {
                 />
               }
             />
+            <Route
+              path="/UserProductList"
+              element={
+                <UserProductList
+                  products={products}
+                  addToCart={addToCart}
+                  deleteProduct={deleteProduct}
+                />
+              }
+            />
             <Route path="/" element={<Home />} />
             <Route path="/user" element={<User userId={userId} />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/coupen" element={<Coupon />} />
             <Route path="/coupenhistory" element={<CoupenHistory />} />
             <Route path="/applycoupen" element={<ApplyCoupen />} />
-            <Route path="/RoleManage" element={<RoleManage />} />
             <Route
               path="/login"
               element={<Login handleLogin={handleLogin} />}

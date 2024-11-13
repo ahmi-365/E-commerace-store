@@ -154,7 +154,7 @@ const AdminDash = () => {
       <Button variant="primary" onClick={() => { setShowModal(true); setIsUpdating(false); }}>
         Create Sub-Admin
       </Button>
-      <Link to="/RoleManage">      
+      <Link to="/rolemanage">      
         <Button>Create New Role</Button>
       </Link>
 
