@@ -82,73 +82,77 @@ export default function PaymentMethods({
     }
   };
 
-  const makePayment = async () => {
-    if (!isLoggedIn()) {
-      navigate("/login");
-      return;
+ const makePayment = async () => {
+  // Check if the user is logged in before proceeding
+  if (!isLoggedIn()) {
+    navigate("/login");
+    return;
+  }
+
+  setLoading(true);
+  setError("");
+
+  try {
+    // Retrieve user from localStorage
+    const user = JSON.parse(localStorage.getItem("user"));
+    const userEmail = user?.token?.email; // Access email from the token object
+
+    if (!userEmail) {
+      throw new Error("User email is missing.");
     }
 
-    setLoading(true);
-    setError("");
+    // Increment coupon usage if the coupon is valid 
+    if (isCouponValid) {
+      const incrementResponse = await fetch("https://m-store-server-ryl5.onrender.com/api/coupons/increment-usage", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: couponCode }),
+      });
 
-    try {
-      const user = JSON.parse(localStorage.getItem("user"));
-      const userEmail = user ? user.email : null;
-      if (!userEmail) {
-        navigate("/login");
-        return;
+      if (!incrementResponse.ok) {
+        const errorData = await incrementResponse.json();
+        throw new Error(errorData.error || "Failed to increment coupon usage");
       }
 
-      // Increment coupon usage if the coupon is valid
-      if (isCouponValid) {
-        const incrementResponse = await fetch("https://m-store-server-ryl5.onrender.com/api/coupons/increment-usage", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ code: couponCode }),
-        });
-
-        if (!incrementResponse.ok) {
-          const errorData = await incrementResponse.json();
-          throw new Error(errorData.error || "Failed to increment coupon usage");
-        }
-
-        const data = await incrementResponse.json();
-        console.log("Coupon usage count updated:", data.usageCount);
-      }
-
-      const response = await fetch(
-        "https://m-store-server-ryl5.onrender.com/api/create-checkout-session",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            cartItems,
-            userEmail,
-            shippingCost: enableShipping ? shippingCost : 0, // Only include shipping if enabled
-            discountPercentage: isCouponValid ? discountPercentage : 0,
-            couponCode: isCouponValid ? couponCode : null,
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to create Stripe session");
-      }
-
-      const sessionData = await response.json();
-      const stripe = await loadStripe(
-        "pk_test_51Q8JuzAepkvGYigUYzQySvT0mpDH3tsrQ24oc2D8iskM889N6666wswvpHuEwNVW3wByAx7blim6NFCfG7AyvAQg00T8tA0hNy"
-      );
-      await stripe.redirectToCheckout({ sessionId: sessionData.id });
-
-      setOrderHistory(cartItems);
-    } catch (error) {
-      setError(error.message);
-    } finally {
-      setLoading(false);
+      const data = await incrementResponse.json();
+      console.log("Coupon usage count updated:", data.usageCount);
     }
-  };
+
+    const response = await fetch(
+      "https://m-store-server-ryl5.onrender.com/api/create-checkout-session",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          cartItems,
+          userEmail,
+          shippingCost: enableShipping ? shippingCost : 0, // Only include shipping if enabled
+          discountPercentage: isCouponValid ? discountPercentage : 0,
+          couponCode: isCouponValid ? couponCode : null,
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Server Error:", errorData); // Log the error response
+      throw new Error(errorData.error || "Failed to create Stripe session");
+    }
+
+    const sessionData = await response.json();
+    const stripe = await loadStripe(
+      "pk_test_51Q8JuzAepkvGYigUYzQySvT0mpDH3tsrQ24oc2D8iskM889N6666wswvpHuEwNVW3wByAx7blim6NFCfG7AyvAQg00T8tA0hNy"
+    );
+    await stripe.redirectToCheckout({ sessionId: sessionData.id });
+
+    setOrderHistory(cartItems);
+  } catch (error) {
+    setError(error.message);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const validateCoupon = async () => {
     setCouponError("");

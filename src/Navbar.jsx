@@ -15,8 +15,7 @@ const AppNavbar = ({ cartCount, isLoggedIn, handleLogout, handleCartClick }) => 
   const userPermissions = userData ? userData.token.permissions : [];
 
   useEffect(() => {
-    console.log('User Role from localStorage:', userRole);
-    console.log('User Permissions from localStorage:', userPermissions);
+   
   }, [userRole, userPermissions]);
 
   const handleCartRedirect = () => {
