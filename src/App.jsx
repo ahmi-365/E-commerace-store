@@ -4,6 +4,7 @@ import {
   Route,
   Routes,
   useNavigate,
+  Navigate,
 } from "react-router-dom";
 import AppNavbar from "./Navbar";
 import ProductForm from "./ProductForm";
@@ -119,7 +120,16 @@ const App = () => {
       )
     );
   };
-
+  const AuthenticatedRoute = ({ children }) => {
+    const user = JSON.parse(localStorage.getItem("user")); // Check user data in localStorage
+    const isLoggedIn = user?.isLoggedIn;
+  
+    if (!isLoggedIn) {
+      return <Navigate to="/login" replace />;
+    }
+  
+    return children;
+  };
   const removeItem = (itemId) => {
     setCartItems(cartItems.filter((item) => item._id !== itemId));
   };
@@ -151,7 +161,7 @@ const App = () => {
     resetCart();
     toast.success("Logged out successfully.");
   };
-
+ 
   const handleLogin = (token, email, id) => {
     const user = { isLoggedIn: true, token, email, id };
     localStorage.setItem("user", JSON.stringify(user));
@@ -191,120 +201,124 @@ const App = () => {
           <div className="text-danger">{error}</div>
         ) : (
           <Routes>
-            <Route
-              path="/add-product"
-              element={
-                <ProtectedRoute requiredPermissions={["manageProducts"]}>
-                  <ProductForm fetchProducts={fetchProducts} />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/rolemanage"
-              element={<ProtectedRoute superAdminOnly={true} />}
-            >
-              <Route path="" element={<RoleManage />} />
-            </Route>
-            <Route
-              path="/admindash"
-              element={<ProtectedRoute superAdminOnly={true} />}
-            >
-              <Route path="" element={<AdminDash />} />
-            </Route>
-            <Route
-              path="/products"
-              element={
-                <ProtectedRoute requiredPermissions={["manageProducts"]} />
-              }
-            >
-              <Route
-                path=""
-                element={
-                  <ProductList
-                    products={products}
-                    addToCart={addToCart}
-                    deleteProduct={deleteProduct}
-                  />
-                }
+          {/* Unprotected Routes */}
+          <Route
+            path="/UserProductList"
+            element={
+              <UserProductList
+                products={products}
+                addToCart={addToCart}
+                deleteProduct={deleteProduct}
               />
-            </Route>
-            <Route
-              path="/orderhistory"
-              element={<ProtectedRoute requiredPermissions={["viewOrders"]} />}
-            >
-              <Route path="" element={<OrderHistory />} />
-            </Route>
-            <Route
-              path="/usermanage"
-              element={<ProtectedRoute requiredPermissions={["manageUsers"]} />}
-            >
-              <Route path="" element={<UserManagement />} />
-            </Route>
-            <Route path="/order-success" element={<OrderSuccess />} />
-            <Route
-              path="/cart"
-              element={
-                <QuantityEdit
-                  cartItems={cartItems}
-                  updateQuantity={updateQuantity}
-                  removeItem={removeItem}
-                  resetCart={resetCart}
-                  isLoggedIn={isLoggedIn}
-
-                />
-              }
-            />
-            <Route
-              path="/payment"
-              element={<Payment cartItems={cartItems} />}
-            />
-            <Route
-              path="/product/:id"
-              element={<ProductDetails addToCart={addToCart} />}
-            />
-            <Route path="/OrderDetails/:orderId" element={<OrderDetails />} />
-            <Route
-              path="/account"
-              element={
-                <Account
-                  isLoggedIn={isLoggedIn}
-                  handleLogout={handleLogout}
-                  userEmail={userEmail}
-                />
-              }
-            />
-            <Route
-              path="/UserProductList"
-              element={
-                <UserProductList
-                  products={products}
-                  addToCart={addToCart}
-                  deleteProduct={deleteProduct}
-                />
-              }
-            />
-            <Route
-              path="/adminpage"
-              element={
-                <ProtectedRoute superAdminOnly={true}>
-                  <AdminPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/" element={<Home />} />
-            <Route path="/user" element={<User userId={userId} />} />
-            <Route path="/signup" element={<SignUp />} />
-            <Route path="/coupen" element={<Coupon />} />
-            <Route path="/coupenhistory" element={<CoupenHistory />} />
-            <Route path="/Order-history" element={<UserOrderHistory />} />
-            <Route path="/applycoupen" element={<ApplyCoupen />} />
-            <Route
-              path="/login"
-              element={<Login handleLogin={handleLogin} />}
-            />
-            <Route path="/paymentdetails/:id" element={<PaymentDetails />} />{" "}
-            {/* Use element prop */}
-          </Routes>
+            }
+          />
+          <Route path="/login" element={<Login handleLogin={handleLogin} />} />
+        
+          {/* Protected Routes */}
+          <Route
+            path="*"
+            element={
+              <AuthenticatedRoute>
+                <Routes>
+                  <Route
+                    path="/add-product"
+                    element={
+                      <ProtectedRoute requiredPermissions={["manageProducts"]}>
+                        <ProductForm fetchProducts={fetchProducts} />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/rolemanage"
+                    element={<ProtectedRoute superAdminOnly={true} />}
+                  >
+                    <Route path="" element={<RoleManage />} />
+                  </Route>
+                  <Route
+                    path="/admindash"
+                    element={<ProtectedRoute superAdminOnly={true} />}
+                  >
+                    <Route path="" element={<AdminDash />} />
+                  </Route>
+                  <Route
+                    path="/products"
+                    element={
+                      <ProtectedRoute requiredPermissions={["manageProducts"]} />
+                    }
+                  >
+                    <Route
+                      path=""
+                      element={
+                        <ProductList
+                          products={products}
+                          addToCart={addToCart}
+                          deleteProduct={deleteProduct}
+                        />
+                      }
+                    />
+                  </Route>
+                  <Route
+                    path="/orderhistory"
+                    element={<ProtectedRoute requiredPermissions={["viewOrders"]} />}
+                  >
+                    <Route path="" element={<OrderHistory />} />
+                  </Route>
+                  <Route
+                    path="/usermanage"
+                    element={<ProtectedRoute requiredPermissions={["manageUsers"]} />}
+                  >
+                    <Route path="" element={<UserManagement />} />
+                  </Route>
+                  <Route path="/order-success" element={<OrderSuccess />} />
+                  <Route
+                    path="/cart"
+                    element={
+                      <QuantityEdit
+                        cartItems={cartItems}
+                        updateQuantity={updateQuantity}
+                        removeItem={removeItem}
+                        resetCart={resetCart}
+                        isLoggedIn={isLoggedIn}
+                      />
+                    }
+                  />
+                  <Route path="/payment" element={<Payment cartItems={cartItems} />} />
+                  <Route
+                    path="/product/:id"
+                    element={<ProductDetails addToCart={addToCart} />}
+                  />
+                  <Route path="/OrderDetails/:orderId" element={<OrderDetails />} />
+                  <Route
+                    path="/account"
+                    element={
+                      <Account
+                        isLoggedIn={isLoggedIn}
+                        handleLogout={handleLogout}
+                        userEmail={userEmail}
+                      />
+                    }
+                  />
+                  <Route
+                    path="/adminpage"
+                    element={
+                      <ProtectedRoute superAdminOnly={true}>
+                        <AdminPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route path="/" element={<Home />} />
+                  <Route path="/user" element={<User userId={userId} />} />
+                  <Route path="/signup" element={<SignUp />} />
+                  <Route path="/coupen" element={<Coupon />} />
+                  <Route path="/coupenhistory" element={<CoupenHistory />} />
+                  <Route path="/Order-history" element={<UserOrderHistory />} />
+                  <Route path="/applycoupen" element={<ApplyCoupen />} />
+                  <Route path="/paymentdetails/:id" element={<PaymentDetails />} />
+                </Routes>
+              </AuthenticatedRoute>
+            }
+          />
+        </Routes>
         )}
       </div>
     </>
