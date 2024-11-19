@@ -314,8 +314,7 @@ const App = () => {
                   <Route path="/coupenhistory" element={<CoupenHistory />} />
                   <Route path="/Order-history" element={<UserOrderHistory />} />
                   <Route path="/applycoupen" element={<ApplyCoupen />} />
-                  <Route path="datadeletion" element={<DataDeletionPage />} />
-
+                  <Route path="/deletion" element={<DataDeletionPage />} />
                   <Route path="/paymentdetails/:id" element={<PaymentDetails />} />
                 </Routes>
               </AuthenticatedRoute>
