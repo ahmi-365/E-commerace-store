@@ -36,6 +36,7 @@ import UserManagement from "./UserManagment";
 import UserProductList from "./User/UserProduct";
 import AdminPage from "./AdminPage";
 import UserOrderHistory from "./User/UserOrder";
+import DataDeletionPage from "./DataDeletionPage";
 
 const App = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -313,6 +314,8 @@ const App = () => {
                   <Route path="/coupenhistory" element={<CoupenHistory />} />
                   <Route path="/Order-history" element={<UserOrderHistory />} />
                   <Route path="/applycoupen" element={<ApplyCoupen />} />
+                  <Route path="datadeletion" element={<DataDeletionPage />} />
+
                   <Route path="/paymentdetails/:id" element={<PaymentDetails />} />
                 </Routes>
               </AuthenticatedRoute>
