@@ -37,6 +37,8 @@ import UserProductList from "./User/UserProduct";
 import AdminPage from "./AdminPage";
 import UserOrderHistory from "./User/UserOrder";
 import DataDeletionPage from "./DataDeletionPage";
+import FBookLogin from "./FBookLogin";
+import FacebookCallback from "./FacebookCallback";
 
 const App = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -214,6 +216,10 @@ const App = () => {
             }
           />
           <Route path="/login" element={<Login handleLogin={handleLogin} />} />
+          <Route path="/fblogin" element={<FBookLogin />} />
+          <Route path="/facebook/callback" element={<FacebookCallback />} />
+
+
         
           {/* Protected Routes */}
           <Route

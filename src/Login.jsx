@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
+import FBookLogin from './FBookLogin';
 
 const Login = ({ handleLogin }) => {
   const [email, setEmail] = useState('');
@@ -162,12 +163,14 @@ const Login = ({ handleLogin }) => {
           <button type="submit" className="btn btn-primary w-100 mb-3" disabled={loading}>
             {loading ? 'Logging in...' : 'Login'}
           </button>
+          
           {error && <p className="text-danger text-center mt-3">{error}</p>}
         </form>
         <div className="text-center">
           <p className="mb-0">
             New user? <Link to="/signup" className="text-primary">Sign up here</Link>
           </p>
+          <FBookLogin />
         </div>
       </div>
     </div>
