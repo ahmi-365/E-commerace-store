@@ -11,11 +11,13 @@ const AppNavbar = ({ cartCount, isLoggedIn, handleLogout, handleCartClick }) => 
 
   const storedUser = localStorage.getItem('user');
   const userData = storedUser ? JSON.parse(storedUser) : null;
-  const userRole = userData ? userData.token.role : null;
-  const userPermissions = userData ? userData.token.permissions : [];
+
+  // Safely access userRole and userPermissions with fallback values
+  const userRole = userData?.token?.role || null;
+  const userPermissions = userData?.token?.permissions || [];
 
   useEffect(() => {
-   
+    // Additional side effects can be handled here if necessary
   }, [userRole, userPermissions]);
 
   const handleCartRedirect = () => {
@@ -41,11 +43,10 @@ const AppNavbar = ({ cartCount, isLoggedIn, handleLogout, handleCartClick }) => 
               Products
             </Nav.Link>
             {isLoggedIn && (
-               <Nav.Link as={Link} to="/Order-history" onClick={() => setExpanded(false)}>
-               <FontAwesomeIcon icon={faHistory} className="me-2" />
-               View Orders
-             </Nav.Link>
-              
+              <Nav.Link as={Link} to="/Order-history" onClick={() => setExpanded(false)}>
+                <FontAwesomeIcon icon={faHistory} className="me-2" />
+                View Orders
+              </Nav.Link>
             )}
             {userPermissions.includes('manageProducts') && (
               <Nav.Link as={Link} to="/products" onClick={() => setExpanded(false)}>
@@ -55,10 +56,9 @@ const AppNavbar = ({ cartCount, isLoggedIn, handleLogout, handleCartClick }) => 
             )}
             {userPermissions.includes('viewOrders') && (
               <Nav.Link as={Link} to="/orderhistory" onClick={() => setExpanded(false)}>
-  <FontAwesomeIcon icon={faCog} className="me-2" />
-  Manage Order History
-            </Nav.Link>
-             
+                <FontAwesomeIcon icon={faCog} className="me-2" />
+                Manage Order History
+              </Nav.Link>
             )}
             {userPermissions.includes('manageUsers') && (
               <Nav.Link as={Link} to="/usermanage" onClick={() => setExpanded(false)}>
