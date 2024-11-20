@@ -5,32 +5,51 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faShoppingCart, faUser, faSignOutAlt, faBox, faHistory, faCogs, faCog } from '@fortawesome/free-solid-svg-icons';
 import './Navbar.css';
 
-const AppNavbar = ({ cartCount, isLoggedIn, handleLogout, handleCartClick }) => {
+const AppNavbar = ({ cartCount, handleCartClick }) => {
   const [expanded, setExpanded] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userRole, setUserRole] = useState(null);
+  const [userPermissions, setUserPermissions] = useState([]);
   const navigate = useNavigate();
 
-  const storedUser = localStorage.getItem('user');
-  const userData = storedUser ? JSON.parse(storedUser) : null;
-
-  // Safely access userRole and userPermissions with fallback values
-  const userRole = userData?.token?.role || null;
-  const userPermissions = userData?.token?.permissions || [];
+  const loadUserData = () => {
+    const storedUser = localStorage.getItem('user');
+    const userData = storedUser ? JSON.parse(storedUser) : null;
+    setIsLoggedIn(userData?.isLoggedIn || false);
+    setUserRole(userData?.token.role || null);
+    setUserPermissions(userData?.token.permissions || []);
+  };
 
   useEffect(() => {
-    // Additional side effects can be handled here if necessary
-  }, [userRole, userPermissions]);
+    loadUserData();
+
+    // Listen to changes in localStorage
+    const handleStorageChange = () => {
+      loadUserData();
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
 
   const handleCartRedirect = () => {
     if (isLoggedIn) {
       handleCartClick();
     } else {
-      navigate("/login");
+      navigate('/login');
     }
     setExpanded(false);
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    setIsLoggedIn(false);
+    setUserRole(null);
+    setUserPermissions([]);
+    navigate('/');
+  };
+
   return (
-    <Navbar bg="dark" variant="dark" expand="lg" expanded={expanded} onToggle={() => setExpanded(!expanded)} className="shadow sticky-top full-width-navbar">
+    <Navbar bg="dark" variant="dark" expand="lg" expanded={expanded} className="shadow sticky-top full-width-navbar">
       <Container>
         <Navbar.Brand as={Link} to="/" onClick={() => setExpanded(false)}>
           Product Management
@@ -78,20 +97,15 @@ const AppNavbar = ({ cartCount, isLoggedIn, handleLogout, handleCartClick }) => 
               <FontAwesomeIcon icon={faShoppingCart} className="me-1" />
               {cartCount > 0 && <span className="badge bg-danger ms-1">{cartCount}</span>}
             </Nav.Link>
-            <Nav.Link className="d-flex align-items-center" onClick={() => setExpanded(false)}>
-              <Link to="/account">
-                <FontAwesomeIcon icon={faUser} className="me-1" />
-              </Link>
-            </Nav.Link>
             {isLoggedIn ? (
-              <Nav.Link onClick={() => { handleLogout(); setExpanded(false); }} className="d-flex align-items-center">
+              <Nav.Link onClick={handleLogout} className="d-flex align-items-center">
                 <FontAwesomeIcon icon={faSignOutAlt} className="me-1" />
-                <span>Logout</span>
+                Logout
               </Nav.Link>
             ) : (
-              <Nav.Link as={Link} to="/login" className="d-flex align-items-center" onClick={() => setExpanded(false)}>
+              <Nav.Link as={Link} to="/login" className="d-flex align-items-center">
                 <FontAwesomeIcon icon={faUser} className="me-1" />
-                <span>Login</span>
+                Login
               </Nav.Link>
             )}
           </Nav>

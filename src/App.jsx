@@ -219,6 +219,7 @@ const App = () => {
           <Route path="/fblogin" element={<FBookLogin />} />
           <Route path="/facebook/callback" element={<FacebookCallback />} />
           <Route path="/" element={<Home />} />
+          <Route path="/signup" element={<SignUp />} />
 
 
         
@@ -315,7 +316,6 @@ const App = () => {
                     }
                   />
                   <Route path="/user" element={<User userId={userId} />} />
-                  <Route path="/signup" element={<SignUp />} />
                   <Route path="/coupen" element={<Coupon />} />
                   <Route path="/coupenhistory" element={<CoupenHistory />} />
                   <Route path="/Order-history" element={<UserOrderHistory />} />
