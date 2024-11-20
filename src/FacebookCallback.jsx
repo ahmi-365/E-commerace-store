@@ -1,41 +1,33 @@
-import React, { useEffect } from 'react';
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
-function FacebookCallback() {
-  const fetchFacebookData = async () => {
-    const query = new URLSearchParams(window.location.search);
-    const code = query.get('code');
-    
-    console.log("Authorization code:", code);  // Make sure 'code' is being logged here
-
-    if (!code) {
-      console.error('No authorization code found');
-      return;
-    }
-
-    try {
-      const response = await fetch(
-        `https://m-store-server-ryl5.onrender.com/api/users/facebook/callback?code=${code}`,
-        { method: 'GET' }
-      );
-      const data = await response.json();
-      console.log("API Response:", data);  // Check the API response here
-
-      if (response.ok) {
-        console.log('Login Successful:', data); // Make sure data is logged correctly
-        // Store user data and redirect
-      } else {
-        console.error('Facebook login error:', data.message);
-      }
-    } catch (error) {
-      console.error('Facebook login error:', error);
-    }
-  };
+const FacebookCallback = () => {
+  const navigate = useNavigate();
 
   useEffect(() => {
-    fetchFacebookData();
-  }, []);
+   const urlParams = new URLSearchParams(window.location.search);
+   const code = urlParams.get('code');
 
-  return <div>Logging you in via Facebook...</div>;
-}
+   if (code) {
+       // Send the code to the backend to exchange for an access token
+       fetch(`https://m-store-server-ryl5.onrender.com/api/users/facebook/callback?code=${code}`, {
+           method: 'GET',
+       })
+       .then(response => response.json())
+       .then(data => {
+           // Handle the response from backend, store the user info or token
+           console.log('Facebook login successful:', data);
+           // Redirect or perform any action after login success
+           window.location.href = '/dashboard'; // example redirection
+       })
+       .catch(error => {
+           console.error('Error during Facebook login:', error);
+       });
+   }
+}, []);
+
+
+  return <div>Logging in with Facebook...</div>;
+};
 
 export default FacebookCallback;

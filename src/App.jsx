@@ -218,6 +218,7 @@ const App = () => {
           <Route path="/login" element={<Login handleLogin={handleLogin} />} />
           <Route path="/fblogin" element={<FBookLogin />} />
           <Route path="/facebook/callback" element={<FacebookCallback />} />
+          <Route path="/" element={<Home />} />
 
 
         
@@ -313,7 +314,6 @@ const App = () => {
                       </ProtectedRoute>
                     }
                   />
-                  <Route path="/" element={<Home />} />
                   <Route path="/user" element={<User userId={userId} />} />
                   <Route path="/signup" element={<SignUp />} />
                   <Route path="/coupen" element={<Coupon />} />
