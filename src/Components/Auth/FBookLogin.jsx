@@ -61,8 +61,25 @@ function FBookLogin() {
 
   return (
     <div>
-      <button onClick={facebookLogin}>Login with Facebook</button>
-    </div>
+  <button
+ onClick={facebookLogin}    style={{
+      backgroundColor: '#1877f2',
+      color: '#fff',
+      border: 'none',
+      borderRadius: '5px',
+      padding: '8px 16px',
+      fontSize: '14px',
+      fontWeight: '500',
+      cursor: 'pointer',
+      textDecoration: 'none', // Ensures no underline or decoration
+      transition: 'background-color 0.3s ease',
+    }}
+    onMouseEnter={(e) => (e.target.style.backgroundColor = '#145dbf')}
+    onMouseLeave={(e) => (e.target.style.backgroundColor = '#1877f2')}
+  >
+    Login with Facebook
+  </button>
+</div>
   );
 }
 

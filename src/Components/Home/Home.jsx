@@ -4,9 +4,9 @@ import { Link } from "react-router-dom";
 import './Home.css'; // Assuming you have custom styles
 
 // Import local images
-import product1 from './assets/images/product1.jpg';
-import product2 from './assets/images/product2.jpg';
-import product3 from './assets/images/product3.jpg';
+import product1 from '../../assets/images/product1.jpg';
+import product2 from '../../assets/images/product2.jpg';
+import product3 from '../../assets/images/product3.jpg';
 import { Helmet } from "react-helmet";
 
 const Home = () => {

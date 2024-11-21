@@ -167,10 +167,10 @@ const Login = ({ handleLogin }) => {
           {error && <p className="text-danger text-center mt-3">{error}</p>}
         </form>
         <div className="text-center">
+          <FBookLogin />
           <p className="mb-0">
             New user? <Link to="/signup" className="text-primary">Sign up here</Link>
           </p>
-          <FBookLogin />
         </div>
       </div>
     </div>

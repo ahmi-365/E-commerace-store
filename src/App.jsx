@@ -6,39 +6,36 @@ import {
   useNavigate,
   Navigate,
 } from "react-router-dom";
-import AppNavbar from "./Navbar";
-import ProductForm from "./ProductForm";
-import ProductList from "./ProductList";
-import QuantityEdit from "./Cart";
-import Payment from "./Payment";
-import Home from "./Home";
-import OrderHistory from "./OrderHistory";
-import OrderSuccess from "./OrderSuccess";
-import ProductDetails from "./ProductDetails";
-import OrderDetails from "./OrderDetails";
-import Account from "./Account";
-import SignUp from "./Signup";
-import Login from "./Login";
-import User from "./User";
+import AppNavbar from "./Components/Navbar/Navbar";
+import ProductForm from "./Components/Admin/ProductForm";
+import ProductList from "./Components/Admin/ProductList";
+import QuantityEdit from "./Components/Product/Cart";
+import Home from "./Components/Home/Home";
+import OrderHistory from "./Components/Admin/OrderHistory";
+import ProductDetails from "./Components/Product/ProductDetails";
+import OrderDetails from "./Components/OrderHistory/OrderDetails";
+import Account from "./Components/Auth/Account";
+import SignUp from "./Components/Auth/Signup";
+import Login from "./Components/Auth/Login";
+import User from "./Components/Auth/User";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // Make sure this is loaded only once
 import "./App.css";
-import Coupon from "./Coupen";
-import ApplyCoupen from "./ApplyCoupen";
-import CoupenHistory from "./CoupenHistory";
-import LoadingSpinner from "./LoadingSpinner";
-import PaymentDetails from "./PaymentDetails";
-import AdminDash from "./AdminDash";
-import ProtectedRoute from "./ProtectedRoute";
-import RoleManage from "./RoleManage";
-import UserManagment from "./UserManagment";
-import UserManagement from "./UserManagment";
-import UserProductList from "./User/UserProduct";
-import AdminPage from "./AdminPage";
-import UserOrderHistory from "./User/UserOrder";
-import DataDeletionPage from "./DataDeletionPage";
-import FBookLogin from "./FBookLogin";
-import FacebookCallback from "./FacebookCallback";
+import Coupon from "./Components/Coupon/Coupen";
+import ApplyCoupen from "./Components/Coupon/ApplyCoupen";
+import CoupenHistory from "./Components/Coupon/CoupenHistory";
+import LoadingSpinner from "./Components/Spinner/LoadingSpinner";
+import PaymentDetails from "./Components/OrderHistory/PaymentDetails";
+import AdminDash from "./Components/Admin/AdminDash";
+import ProtectedRoute from "./Components/Admin/ProtectedRoute";
+import RoleManage from "./Components/Admin/RoleManage";
+import UserManagement from "./Components/Admin/UserManagment";
+import UserProductList from "./Components/Product/UserProduct";
+import AdminPage from "./Components/Admin/AdminPage";
+import UserOrderHistory from "./Components/OrderHistory/UserOrder";
+import DataDeletionPage from "./Components/Auth/DataDeletionPage";
+import FBookLogin from "./Components/Auth/FBookLogin";
+import FacebookCallback from "./Components/Auth/FacebookCallback";
 
 const App = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -278,7 +275,6 @@ const App = () => {
                   >
                     <Route path="" element={<UserManagement />} />
                   </Route>
-                  <Route path="/order-success" element={<OrderSuccess />} />
                   <Route
                     path="/cart"
                     element={
@@ -291,7 +287,6 @@ const App = () => {
                       />
                     }
                   />
-                  <Route path="/payment" element={<Payment cartItems={cartItems} />} />
                   <Route
                     path="/product/:id"
                     element={<ProductDetails addToCart={addToCart} />}
