@@ -103,7 +103,7 @@ export default function PaymentMethods({
 
     // Increment coupon usage if the coupon is valid 
     if (isCouponValid) {
-      const incrementResponse = await fetch("https://m-store-server-ryl5.onrender.com/api/coupons/increment-usage", {
+      const incrementResponse = await fetch("https://m-store-server.vercel.app/api/coupons/increment-usage", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code: couponCode }),
@@ -119,7 +119,7 @@ export default function PaymentMethods({
     }
 
     const response = await fetch(
-      "https://m-store-server-ryl5.onrender.com/api/create-checkout-session",
+      "https://m-store-server.vercel.app/api/create-checkout-session",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -160,7 +160,7 @@ export default function PaymentMethods({
 
     try {
       const response = await fetch(
-        "https://m-store-server-ryl5.onrender.com/api/coupons/validate",
+        "https://m-store-server.vercel.app/api/coupons/validate",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

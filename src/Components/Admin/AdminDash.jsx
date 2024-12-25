@@ -22,7 +22,7 @@ const AdminDash = () => {
   useEffect(() => {
     const fetchRoles = async () => {
       try {
-        const response = await axios.get('https://m-store-server-ryl5.onrender.com/api/roles');
+        const response = await axios.get('https://m-store-server.vercel.app/api/roles');
         setRoles(response.data.map(role => role.name)); // Map roles to an array of role names
       } catch (error) {
         console.error("Error fetching roles:", error);
@@ -32,7 +32,7 @@ const AdminDash = () => {
     const fetchSubAdmins = async () => {
       try {
         const token = localStorage.getItem('token'); 
-        const response = await axios.get('https://m-store-server-ryl5.onrender.com/api/admin/subadmins', {
+        const response = await axios.get('https://m-store-server.vercel.app/api/admin/subadmins', {
           headers: {
             Authorization: `Bearer ${token}`,
           },

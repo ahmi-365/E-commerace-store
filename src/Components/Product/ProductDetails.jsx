@@ -34,7 +34,7 @@ const ProductDetails = ({ addToCart }) => {
   useEffect(() => {
     const fetchProductDetails = async () => {
       try {
-        const response = await axios.get(`https://m-store-server-ryl5.onrender.com/api/products/${id}`);
+        const response = await axios.get(`https://m-store-server.vercel.app/api/products/${id}`);
         console.log("Fetched product details:", response.data);
 
         if (response.data) {

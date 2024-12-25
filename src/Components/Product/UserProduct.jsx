@@ -41,7 +41,7 @@ const UserProductList = ({ addToCart }) => {
     }).toString();
 
     try {
-      const response = await fetch(`https://m-store-server-ryl5.onrender.com/api/products?${filterParams}`);
+      const response = await fetch(`https://m-store-server.vercel.app/api/products?${filterParams}`);
       const data = await response.json();
       setProducts(data.products);
       setTotalPages(data.totalPages);
