@@ -57,7 +57,15 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
       }
   }
 
-  res.status(200).send('Webhook received');
+  res.status(200).send('Webhook received');const cors = require('cors');
+
+  app.use(cors({
+    origin: [
+      'http://localhost:5173',
+      'https://ecommercestore-sigma.vercel.app'
+    ]
+  }));
+  
 });
 
 
